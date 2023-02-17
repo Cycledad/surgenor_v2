@@ -26,5 +26,11 @@ bulk upload: git clone https://..........
 username: wayneraid/Ilike2code
 
 git push --set-upstream origin master
-xxx
+
+
+my commits where going to master branch but my default branch was set to main so I wasnt
+seeing commits, solution, changed default branch from main to master.
+
+
+
 
