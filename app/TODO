@@ -1,0 +1,11 @@
+- bilingualism?
+- display flash msg when query is made and table is empty
+- strategy for cleaning up tables when volume is high. hard/soft delete, display ALL recs or just active?
+- HTML linter
+- add colname as constants in code when referencing lists?
+- documentation for client
+- add more comments within code
+- doesn't work on phones?
+- read only msg appears in libre office, what about word? [removed write protect for now]
+- printed doc needs work
+- logging

@@ -1,0 +1,180 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="manageSupplier-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+	supplierName  = rowData[1];
+	supplierAddr  = rowData[2];
+	supplierTel  = rowData[3];
+	supplierEmail  = rowData[4];
+	supplierContact  = rowData[5];
+	supplierActive  = rowData[6];
+	supplierDateInActive  = rowData[7];
+	supplierDateCreated  = rowData[8];
+
+    value = id + "," + supplierName + "," + supplierAddr + "," +  supplierTel  + "," + supplierEmail + "," + supplierContact + "," +  supplierActive + "," + supplierDateInActive + "," + supplierDateCreated
+    URL = "/api/data/manageSupplier?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#manageSupplier-table",
+{
+
+    ajaxURL: "/api/data/manageSupplier",
+    height:"511px",
+    //layout:"fitData",
+    layout:"fitColumns",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:10,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "nom du fournisseur",                  //supplierName
+                    "2" : "adresse du fournisseur",             //supplierAddr
+                    "3" : "province des fournisseur",           //supplier prov
+                    "4" : "fournisseur téléphone",              //supplierTel
+                    "5" : "adresse courriel",                   //supplierEmail
+                    "6" : "nom de la personne - ressource",     //supplierContact
+                    "7" : "actif",                              //supplierActive
+                    "8" : "fournisseur date d’inactivité",      //supplierDateInActive
+                    "9" : "fournisseur date de création",       //supplierDateCreated
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+            "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver le nom du fournisseur ...", //replace default header filter text for column name
+                                "2":"Trouver l’adresse du fournisseur ...",
+                                "3": "Trouver le province des fournisseur ...",
+                                "4":"Trouver le téléphone du fournisseur ...",
+                                "5":"Trouver l’adresse e-mail du fournisseur ...",
+                                "6":"Trouver le nom du contact du fournisseur ...",
+                                "7":"Find Active Suppliers ...",
+                                "8":"Trouver la date du fournisseur inactif ...",
+                                "9":"Trouver la date de création du fournisseur ...",
+                            }
+                        }
+
+            },
+        },
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by Supplier Name, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
+        {title:"supplierName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Name ..."},
+        {title:"supplierAddr", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Address ..."},
+        {title:"supplierProv", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Province ..."},
+        {title:"supplierTel", field:"4", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Telephone ..."},
+        {title:"supplierEmail", field:"5", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Email ..."},
+        {title:"supplierContact", field:"6", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Contact Name ..."},
+        {title:"supplierActive", field:"7", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Suppliers ..."},
+        {title:"supplierDateInActive", field:"8", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Inactive ..."},
+        {title:"supplierDateCreated", field:"9", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
+    ],
+});
+
+columns: ['', '', '', '', '', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+</script>
+{% endblock %}

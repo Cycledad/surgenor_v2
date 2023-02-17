@@ -1,0 +1,42 @@
+@app.route("/index", methods=["POST", "GET"])
+def login():
+
+    alist = ['one',
+             'two2',
+             'three']
+
+    if request.method == "POST":
+        req = request.form
+        print(f'This is a request - {req}')
+        return render_template("index.html", slist=alist)
+    else:
+        return render_template("index.html", slist=alist)
+
+
+======================================================================================
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="#" method="post">
+	 <div class="form-group">
+                <label for="supplier">Choose a supplier:</label>
+
+
+                <select name="supplier" id="supplier" required>
+                    <option value='' selected>Please select a supplier</option>
+                  {% for s in slist %}
+                     <option value={{s}} >{{s}}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-default" type="submit">lets post back</button>
+            </div>
+</form>
+</body>
+</html>

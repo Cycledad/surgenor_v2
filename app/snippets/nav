@@ -1,0 +1,30 @@
+ <a class="dropdown-item" href="#">Users</a>
+                    <a class="dropdown-item" href="#">Department</a>
+                    <a class="dropdown-item" href="/addRow">Purchase Order Number</a>
+                    <a class="dropdown-item" href="#">Supplier</a>
+                    <a class="dropdown-item" href="/addPart">Item / Part</a>
+
+
+
+<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+
+
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Purchase Order
+                        </a>
+
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Purchaser
+                        </a>
+
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Purchase Department
+                        </a>
+
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink6" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Parts
+                        </a>
+
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Supplier
+                        </a>

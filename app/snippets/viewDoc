@@ -1,0 +1,78 @@
+'''
+@app.route('/viewDoc')
+def viewDoc():
+    try:
+        #docName = session['fname']
+        #return render_template('viewDoc.html', docName=docName)
+        #return render_template('viewDoc.html')
+        from flask import send_from_directory
+        #from flask import Response, send_from_directory
+        #from werkzeug.wsgi import FileWrapper
+        #from io import BytesIO, StringIO
+
+        print("*** inside viewDoc")
+
+
+
+
+
+        if action == 'printOrder':
+            value = request.args.get('value', '')
+            myList = value.split(',')
+            orderId = myList[0]
+            orderList = utilities.getOrderById(orderId)
+            fname = utilities.printPurchaseOrder(orderList)
+            #return render_template('viewDoc.html', docName=docPath)
+            session['fname'] = fname
+            #return redirect(url_for('viewDoc'))
+
+
+
+
+
+
+
+
+        with open(filename, 'rb') as bites:
+            response = Response(
+                BytesIO(bites.read()),
+                attachment=filename,
+                mimetype='application/octet-stream'
+            )
+
+
+        #return response(filename, as_attachment=True)
+
+        #filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
+
+        #executing LOCALLY
+        #filename = 'generatedDoc_479247.docx'
+        #directory = "C:\\Users\\wayne\\APP\\app\\"
+
+        # executing on SERVER
+        filename = 'generatedDoc_132106.docx'
+        directory = '/home/wayneraid/surgenor/app/'
+
+        return send_from_directory(directory, filename, as_attachment=False)
+
+
+
+        data = BytesIO(filename)
+        # See: https://www.pythonanywhere.com/forums/topic/13570/
+        file_wrapper = FileWrapper(data)
+        #filename = '/home/wayneraid/surgenor/app/requirements.txt'
+        #filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
+        headers = {
+                'Content-Disposition': 'attachment; filename="{}"'.format(filename)
+        }
+
+        response = Response(file_wrapper,
+                            mimetype="application/octet-stream",
+                                direct_passthrough=True,
+                                headers=headers)
+        return response
+
+    except Exception as e:
+        print(f'problem in viewDoc: {e}')
+
+'''

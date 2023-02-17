@@ -1,0 +1,122 @@
+{% extends 'base_Sat.html' %}
+{% block content %}
+<h1>you have reached addRow</h1>
+
+<form action="#" method="post">
+    <div class="form-group">
+        <label for="PONbr">Purchase Order Number</label>
+        <input type="text" class='form-control' name="PONbr" id="PONbr" required>
+    </div>
+    <div class="form-group">
+        <label for="selectpurchaser">Purchaser</label>
+        <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
+            <option value="">--Please select a purchaser--</option>
+                {% for purchaserName in listPurchaserName: %}
+                    <option value={{purchaserName}}>{{purchaserName}}</option>
+                {% endfor %}
+        </select>
+        <!--<input type="text" class='form-control' name="purchaser" id="purchaser" required>-->
+    </div>
+    <!-- <div class="form-group">
+        <label for="supplier">Supplier</label>
+        <input type="text" class='form-control' name="supplier" id="supplier" required>
+    </div>  --->
+
+    <div class="form-group">
+        <label for="selectpartNbr">Part Number</label>
+        <select name="selectPartNbr" id="selectPartNbr" class='form-control select-w25' required >
+            <option value="">--Please select a part number--</option>
+            {% for partNbr in listPartNbr: %}
+            <option value={{partNbr}}>{{partNbr}}</option>
+            {% endfor %}
+        </select>
+        <!-- <input type="text" name="partnbr" id='partnbr' class="form-control" required/> -->
+    </div>
+
+        <div class="form-group">
+            <label for="selectpartDesc">Part</label>
+            <select name="selectPartDesc" id="selectPartDesc" class='form-control  select-w25' required>
+                <option value="">--Please select a part--</option>
+                    {% for part in listPartDesc: %}
+                        <option value={{part}}>{{part}}</option>
+                    {% endfor %}
+            </select>
+        </div>
+                    <!-- <input type="text" name="description" id='description' class="form-control" required/> -->
+
+        <div class="form-group">
+            <label for="selectsupplier">Supplier:</label>
+            <select name="selectSupplier" id="selectSupplier" class='form-control  select-w25' required>
+			    <option value="">--Please select a supplier--</option>
+				    {% for supplier in listSupplierNames: %}
+                        <option value={{supplier}}>{{supplier}}</option>
+                    {% endfor %}
+            </select>
+        </div>
+
+                    <!--<input type="text" name="supplier" id='supplier' class="form-control" required/> -->
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="text" name="quantity" id="quantity" class='form-control  select-w15' required/>
+        </div>
+
+        <div class="form-group">
+            <label for="selectunit">Unit</label>
+            <select name="selectUnit" id="selectUnit" class='form-control  select-w25' required>
+			    <option value="">--Please select a unit--</option>
+				    {% for unit in listUnits: %}
+                        <option value={{unit}}>{{unit}}</option>
+                    {% endfor %}
+            </select>
+                    <!--<input type="text" name="unit" id="unit" class="form-control" required/> -->
+
+        </div>
+
+        <div class="form-group">
+            <label for="unitprice">Unit price:</label>
+            <input type="text" name="unitprice" id="unitprice" class='form-control  select-w15' required/>
+        </div>
+
+        <div class="form-group">
+            <label for="total">Total:</label>
+            <input type="text" name="total" id="total" class="form-control" required/>
+        </div>
+
+
+                <!--
+                <td class="col-sm-3">
+                    <input type="tel" id="phone" name="phone" class="form-control"
+                        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    required>
+                </td>
+                -->
+
+
+
+                <td class="col-sm-2"><a class="deleteRow"></a>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" style="text-align: left;">
+                    <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+                </td>
+            </tr>
+            <tr>
+            </tr>
+        </tfoot>
+        </table>
+    </div>
+    <tr>
+    <td></td><td></td><td></td><td></td><td>Sub Total</td>
+    </tr>
+
+
+    <div class="form-group">
+        <button class="btn btn-default" type="submit">lets post back</button>
+    </div>
+</form>
+
+
+{% endblock content %}

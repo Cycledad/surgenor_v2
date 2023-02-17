@@ -1,0 +1,27 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+<br><br>
+<h1>{% if 'addDepartment' in session %} {{ session['addDepartment'] }} {% else %} Add Department:{% endif %}</h1>
+<br><br>
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
+
+        <div class="form-group">
+            <label for="deptName">{% if 'departmentName' in session %} {{ session['departmentName'] }} {% else %} Department Name:{% endif %}</label>
+            <input type="text" class='form-control' id="deptName" name="deptName" required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="deptActive">{% if 'departmentActive' in session %} {{ session['departmentActive'] }} {% else %} Department active:{% endif %}</label>
+            <p>
+                <input type="radio" class='form-check-input' id='deptActive1' name="deptActive" value="YES" required> {% if 'yes' in session %} {{ session['yes'] }} {% else %} Yes{% endif %}
+                <input type="radio" class='form-check-input' id='deptActive2' name="deptActive" value="NO" required> {% if 'no' in session %} {{ session['no'] }} {% else %} No{% endif %}
+            </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+    </div>
+</form>
+
+{% endblock content %}

@@ -1,0 +1,65 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+<br><br>
+<h1>{% if 'addSupplier' in session %} {{ session['addSupplier'] }} {% else %} Add Supplier{% endif %}</h1>
+<br><br>
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
+
+        <div class="form-group">
+            <label for="supplierName">{% if 'supplierName' in session %} {{ session['supplierName'] }} {% else %} Supplier Name:{% endif %}</label>
+            <input type="text" class='form-control' id="supplierName" name="supplierName" required>
+        </div>
+
+        <div class="row">
+            <div class="col-10 mt-3">
+                <label for="supplierAddr">{% if 'supplierAddress' in session %} {{ session['supplierAddress'] }} {% else %} Supplier Address:{% endif %}</label>
+                <input type="text" class='form-control' id="supplierAddr" name="supplierAddr" required>
+            </div>
+             <div class="col-2 mt-3">
+
+                    <label for="supplierProv">{% if 'supplierProv' in session %} {{ session['supplierProv'] }} {% else %} Supplier Province:{% endif %}</label>
+
+                    <select name="supplierProv" id="supplierProv" class='form-control' required>
+                        <option value='QC'>QC</option>
+                        <option value='ON'>ON</option>
+                        <option value='AB'>AB</option>
+                        <option value='BC'>BC</option>
+                        <option value='MB'>MB</option>
+                        <option value='NB'>NB</option>
+                        <option value='NL'>NL</option>
+                        <option value='NT'>NT</option>
+                        <option value='NS'>NS</option>
+                        <option value='NU'>NU</option>
+                        <option value='PE'>PE</option>
+                        <option value='SK'>SK</option>
+                        <option value='YT'>YT</option>
+                        <option value='OTHER'>OTHER</option>
+                    </select>
+
+
+
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="supplierContactName">{% if 'contactName' in session %} {{ session['contactName'] }} {% else %} Contact Name:{% endif %}</label>
+            <input type="text" class='form-control' id="supplierContactName" name="supplierContactName">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="supplierTel">{% if 'telephoneNumber' in session %} {{ session['telephoneNumber'] }} {% else %} Telephone Number:{% endif %}</label>
+            <input type="tel" class='form-control' id="supplierTel" name="supplierTel"required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="supplierEmail">{% if 'email' in session %} {{ session['email'] }} {% else %} Email address:{% endif %}</label>
+            <input type="email" class='form-control' id='supplierEmail' name="supplierEmail" >
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+    </div>
+</form>
+
+{% endblock content %}

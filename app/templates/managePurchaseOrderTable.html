@@ -1,0 +1,175 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="managePurchaseOrderTable"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+	purchaseOrderDate  = rowData[1];
+	purchaseOrderReceivedDate  = rowData[2];
+	purchaseOrderActive  = rowData[3];
+	purchaseOrderDateDeleted  = rowData[4];
+	purchaseOrderNbr = rowData[5];
+	purchaseOrderPurchaserId  = rowData[6];
+	purchaseOrderPurchaserDeptId = rowData[7];
+
+    value = id + "," + purchaseOrderDate + "," + purchaseOrderReceivedDate + "," +  purchaseOrderActive  + "," + purchaseOrderDateDeleted + "," + purchaseOrderNbr + "," +  purchaseOrderPurchaserId + "," + purchaseOrderPurchaserDeptId
+    URL = "/api/data/managePurchaseOrderTable?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#managePurchaseOrderTable",
+{
+
+    ajaxURL: "/api/data/managePurchaseOrderTable",
+    height:"511px",
+    //layout:"fitData",
+    layout:"fitColumns",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:10,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "achatOrderDate",                  //purchase order date
+                    "2" : "achatOrderReceivedDate",          //purchase order received date
+                    "3" : "achatOrderActive",                //purchase order active indicator
+                    "4" : "achatOrderDateleted",             //purchase order inactive date
+                    "5" : "achatOrdernbr",                   //purchase order number
+                    "6" : "achatOrderPurchaserid",           //purchaser id
+                    "7" : "achatOrderPurchaserDeptid",       //purchaser department id
+
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+            "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver la date du bon de commande ...",    //replace default header filter text for column name
+                                "2":"Trouver la date reçue du bon de commande ...",
+                                "3":"Trouver un indicateur actif de bon de commande ...",
+                                "4":"Trouver la date inactive du bon de commande ...",
+                                "5":"Trouver le numéro de bon de commande ...",
+                                "6":"Trouver l'identifiant de l'acheteur",
+                                "7":"Trouver l'identification du département des acheteurs",
+                            }
+                        }
+
+            },
+        },
+    initialSort:[
+        {column: "0", dir:"asc"}, //sort by Purchase Order Id, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:true},
+        {title:"purchaseOrderDate", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Date ..."},
+        {title:"purchaseOrderReceivedDate", field:"2", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Received Date ..."},
+        {title:"purchaseOrderActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Active indicator ..."},
+        {title:"purchaseOrderDateDeleted", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Inactive Date  ..."},
+        {title:"purchaseOrderNbr", field:"5", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Number ..."},
+        {title:"purchaseOrderPurchaserId", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Id ..."},
+        {title:"purchaseOrderPurchaserDeptId", field:"7", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Department Id ..."},
+
+    ],
+});
+
+columns: ['', '', '', '', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+</script>
+{% endblock %}

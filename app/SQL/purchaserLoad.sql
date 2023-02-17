@@ -1,0 +1,1 @@
+insert into Purchaser('purchaserName', 'purchaseDept', 'purchaserSecurityLevel', 'purchaserActive', 'purchaseDateCreated') values('kevin', 'finance', 1, True, 'aug 2022');

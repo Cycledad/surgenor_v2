@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<h1>{% if 'viewPrint' in session %} {{ session['viewPrint'] }} {% else %} View/Print Purchase Order {% endif %}</h1>
+<br><br>
+
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
+
+        <div class="container">
+
+                {% set pname = namespace(name='') %}
+
+                {% for f in docList: %}
+
+                    {% set fname = f.split('_') %}
+
+                    {% if pname.name != fname[0] %}
+                        <br>
+                        <b>{{fname[0]}}</b>
+                        <br>
+                    {% endif %}
+
+                    <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}'>
+                    <label for="selFile1">{{ f }}</label>
+                    <br>
+
+                    {% set pname.name = fname[0] %}
+
+                {% endfor %}
+
+            <br>
+            <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+
+        </div>
+    </div>
+</form>
+
+
+
+{% endblock content %}

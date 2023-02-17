@@ -1,0 +1,250 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="manageDepartment-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData["0"];
+    deptName = rowData[1];
+    dateCreated = rowData[2];
+    active = rowData[3];
+    dateInActive = rowData[4];
+    value = id + "," + deptName + "," + dateCreated + "," + active + "," + dateInActive;
+//'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+    URL = "/api/data/manageDepartment?action=update&value=" + value;
+    table.setData(URL);
+};
+
+//db soft delete so recs are not actually removed, just flagged as deleted
+//therefore allow modification of rows and then send back for update
+var deleteRow = (deptId) =>
+{
+    debugger;
+    //value = id + "," + deptId;
+    //'/api/data/manageDepartment?action=delete&value=id'
+    URL = "/api/data/manageDepartment?action=delete&value=" + deptId;
+    table.setData(URL);
+};
+
+
+var updateQuantity = (cell) =>
+{
+    //alert("say it");
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    id = rowData["1"];
+    returnQuantity = rowData[13];
+    if (isNaN(returnQuantity)){
+        alert("Not a number!!");
+    }
+    else {
+        quantityOrdered = rowData[8];
+        if (returnQuantity > quantityOrdered) {
+            alert("Quantity returned can not exceed quantity ordered!");
+            rowData[13] = ''
+        }
+        else {
+            URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
+            table.setData(URL);
+        };
+    };
+};
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#manageDepartment-table",
+{
+
+    ajaxURL: "/api/data/manageDepartment",
+    height:"311px",
+    //layout:"fitData",
+    layout:"fitColumns",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "nom du département",                  //deptName
+                    "2" : "département date de création",       //dateCreated
+                    "3" : "département actif",                  //active
+                    "4" : "départementdate d’inactivité",       //dateInActive
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+            "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver un département ...", //replace default header filter text for column name
+                                "2":"Trouver la date de création ...",
+                                "3":"Trouver des départements actifs ...",
+                                "4":"Trouver Date Inactive ...",
+
+                            }
+                        }
+
+            },
+        },
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by Department name, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
+        {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
+        {title:"dateCreated", field:"2", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+        {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
+        {title:"dateInActive", field:"4", hozAlign:"center", sorter:"string", editor:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        //{formatter:"buttonCross", align:"center", title:"del", headerSort:false, cellClick:function(e, cell){
+	    //    if(confirm('Are you sure you want to delete this entry?'))
+	    //        debugger;
+		//        rowData = cell.getRow().getData();
+		//        deptId = rowData[0];
+		//        deleteRow(deptId);
+		//        //cell.getRow().delete();
+	    //    }
+        //},
+        //column definition in the columns array
+        //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
+        //    cell.getRow().delete()}},
+        //{title:"Delete Row", field:"4", editor:true, cellClick:deleteRow, formatter:"buttonCross", width:140, align:"center"},
+        //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
+        //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
+        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        ],
+        });
+
+columns: ['', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+/*
+
+cellClick:function(e, cell){
+        //e - the click event object
+        //cell - cell component
+    },
+
+
+
+var table = new Tabulator("#example-table", {
+    ajaxURL:"http://www.getmydata.com/now", //ajax URL
+});
+
+//trigger AJAX load on "Load Data via AJAX" button click
+document.getElementById("ajax-trigger").addEventListener("click", function(){
+    table.setData("/api/data");
+});
+
+*/
+/*
+function updateDate(cell) {
+    //debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    //id = rowData["1"]
+    //dt_order_received = rowData[11] //date order received col
+    //dt_order_returned = rowData[12] //date order returned col
+    //URL = "/api/data/manageDepartment?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    //table.setData(URL);
+
+
+}
+*/
+function printit(cell)
+{
+    alert("print it");
+}
+
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+</script>
+{% endblock %}

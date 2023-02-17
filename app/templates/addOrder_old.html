@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<h1>{% if 'placeOrder' in session %} {{ session['placeOrder'] }} {% else %} Place your Order! {% endif %}</h1>
+<br><br>
+<form action="#" method="post">
+    <div class="form-group">
+        <label for="PONbr">{% if 'purchaseOrderNumber' in session %} {{ session['purchaseOrderNumber'] }} {% else %} Purchase Order Number: {% endif %}</label>
+        <input type="text" class='form-control' name="PONbr" id="PONbr" value="{{orderNbr}}" readonly/>
+    </div>
+
+    <div class="form-group mt-3">
+          <label>{% if 'purchaser' in session %} {{ session['purchaser'] }} {% else %} Purchaser: {% endif %}</label>
+           <!---<input type="text" class='form-control' name="purchaseName" id="purchaseName" value="{{username}}" readonly/>-->
+
+          <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
+              <option value="">--{% if 'selectPurchaser' in session %} {{ session['selectPurchaser'] }} {% else %} Select a Purchaser{% endif %}--</option>
+                  {% for purchaserName in listPurchaserName: %}
+                      <option value='{{purchaserName}}'>{{purchaserName}}</option>
+                  {% endfor %}
+          </select>
+
+    </div>
+    <br>
+    <table id="myTable"  class="table order-list table-sm" style="table-layout: fixed;">
+<!-- <table id="myTable" class="table order-list" style="width: 100%"> style="table-layout: fixed ; width: 100%;" -->
+    <thead>
+        <tr class="col-sm-3">
+            <td>{% if 'supplier' in session %} {{ session['supplier'] }} {% else %} Supplier{% endif %}</td>
+            <td>{% if 'quantity' in session %} {{ session['quantity'] }} {% else %} Quantity{% endif %}</td>
+            <td>{% if 'partNumber' in session %} {{ session['partNumber'] }} {% else %} Part Number{% endif %}</td>
+            <td>{% if 'partDescription' in session %} {{ session['partDescription'] }} {% else %} Part Description{% endif %}</td>
+            <!--<td>Unit</td>-->
+            <td>{% if 'unitPrice' in session %} {{ session['unitPrice'] }} {% else %} Unit price{% endif %}</td>
+            <!--<td>Cost</td>-->
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="rowContainer">
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                    <select name="selectSupplier" id="selectSupplier" class='form-control' required>
+                        <option value=''>--{% if 'supplier' in session %} {{ session['supplier'] }} {% else %} Please select a Supplier{% endif %}---</option>
+                        {% for supplier in listSupplierNames: %}
+                            <option value='{{supplier}}'>{{supplier}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                    <input type="number" step="0" name="quantity" id="quantity" class='form-control' required />
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                     <input type="text" name="partNbr" id="partNbr" class='form-control' required />
+
+
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                    <input type="text" name="partDesc" id="partDesc" class='form-control'  required />
+
+                </div>
+            </td>
+
+
+
+            <td>
+                <div class="form-group mt-3">
+                    <input type="number" step="0.01" name="unitprice" id="unitprice" class='form-control' required/>
+                </div>
+            </td>
+
+
+            <td class="col-sm-2"><a class="deleteRow"></a>
+
+            </td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: left;">
+                <!--<input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" onclick="myFunc({{listPartNbr}})"/> -->
+                <div class="d-grid col-6 mx-auto">
+                    <input type="button" class="btn btn-primary btn-sm" id="addrow" value="Add Row" />
+                </div>
+            </td>
+            <td></td>
+             
+        </tr>
+        <tr>
+        </tr>
+    </tfoot>
+    </table>
+
+    <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+</form>
+
+{% endblock content %}

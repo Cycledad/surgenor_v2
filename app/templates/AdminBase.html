@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/css/main.css') }}">
+
+    <!-- dataTables jquery -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
+    <link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+    {% if title %}
+        <title>Admin - {{ title }}</title>
+    {% else %}
+        <title>Admin</title>
+    {% endif %}
+</head>
+<body>
+<!-- nav copied from https://github.com/CoreyMSchafer/code_snippets/blob/master/Python/Flask_Blog/06-Login-Auth/flaskblog/templates/layout.html -->
+
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+            <div class="container">
+              <a class="navbar-brand mr-auto" href="/home"><img src="{{ url_for('static', filename='/img/surgenorGatineau.gif') }}" height="30" alt=''></a>
+
+              <div class="collapse navbar-collapse" id="navbarToggle">
+                <div class="navbar-nav mr-auto">
+                  <a class="nav-item nav-link" href="{{ url_for('home') }}">{% if 'home' in session %} {{ session['home'] }} {% else %} Home {% endif %}</a>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if 'purchaseOrder' in session %} {{ session['purchaseOrder'] }} {% else %} Purchase Order {% endif %}
+                      </a>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{url_for('addOrder')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('managePurchaseOrder')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                         <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">{% if 'viewPrint' in session %} {{ session['viewPrint'] }} {% else %} View/Print Purchase Order {% endif %}</a></li>
+                      </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          {% if 'purchaser' in session %} {{ session['purchaser'] }} {% else %} Purchaser {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{{url_for('addPurchaser')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                          <li><a class="dropdown-item" href="{{url_for('managePurchaser')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Department
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{{url_for('addDepartment')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                          <li><a class="dropdown-item" href="{{url_for('manageDepartment')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                        </ul>
+                    </li>
+                    <!--
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Parts
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{url_for('addPart')}}">Create</a></li>
+                            <li><a class="dropdown-item" href="{{url_for('manageParts')}}">Manage</a></li>
+                          </ul>
+                    </li>
+                    -->
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Supplier
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('addSupplier')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                              <li><a class="dropdown-item" href="{{url_for('manageSupplier')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              User
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('manageUser')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Provincial Tax Rates
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('manageProvincialTaxRates')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Statistics
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{url_for('stats')}}">{% if 'statistics' in session %} {{ session['statistics'] }} {% else %} Statistics {% endif %}</a></li>
+                          </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ session['purchaseOrderTable'] }}
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{url_for('managePurchaseOrderTable')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                          </ul>
+                    </li>
+                </div>
+
+              </div>
+              <!-- Navbar Right Side -->
+              <div class="navbar-nav mr-auto">
+                {% if not session.get('loggedOn', None) == None: %} <!-- user is logged in -->
+                  <a class="nav-item nav-link" href=#>{{ session['username'] }}</a>
+                  <a class="nav-item nav-link" href="{{ url_for('logout') }}">{% if 'logout' in session %} {{ session['logout'] }} {% else %} Logout {% endif %}</a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{{ url_for('login') }}">{% if 'login' in session %} {{ session['login'] }} {% else %} Login {% endif %}</a>
+                    <a class="nav-item nav-link" href="{{ url_for('register') }}">{% if 'register' in session %} {{ session['register'] }} {% else %} Register {% endif %}</a>
+                {% endif %}
+                {% if 'lang' not in session: %}
+                    <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/fr.png') }}" height=30 alt='' > </a >
+                {% elif session['lang'] == 'en': %}
+                     <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/fr.png') }}" height=30 alt='' > </a >
+                {% else %}
+                    <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/en.png') }}" height=30 alt='' > </a >
+                {% endif %}
+              </div>
+            </div>
+      </nav>
+    </header>
+    <main role="main" class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
+          {% block content %}
+
+
+          {% endblock %}
+
+
+    </main>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+    <script src="{{url_for('static', filename='/js/addrow.js')}}"></script>
+    <script src="{{url_for('static', filename='/js/DataTables.js')}}"></script>
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
+    <!-- <script src="{{url_for('static', filename='/js/tabulator.js')}}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+
+    {% block scripts %}
+
+    {% endblock %}
+</body>
+<div class="kevinpower">site enhanced by KevinPower</div>
+</html>>

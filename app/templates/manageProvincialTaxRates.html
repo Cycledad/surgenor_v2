@@ -1,0 +1,149 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="manageProvincialTaxRates-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+	provinceCode = rowData[1];
+	taxRate = rowData[2];
+	label = rowData[3];
+	active = rowData[4];
+	value = id + "," + provinceCode + "," + taxRate + "," +  label + "," + active
+    URL = "/api/data/manageProvincialTaxRates?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#manageProvincialTaxRates-table",
+{
+
+    ajaxURL: "/api/data/manageProvincialTaxRates",
+    height:"511px",
+    layout:"fitColumns",
+    //layout:"fitDataFill",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:25,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "code de la province",                //provinceCode
+                    "2" : "taux d'imposition",                  //taxRate
+                    "3" : "label1",                             //label1
+                    "4" : "actif",                              //active
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+                        "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver le code provincial ...", //replace default header filter text for column name
+                                "2":"Trouver le taux d'imposition ...",
+                                "3":"Trouver l'étiquette des taux d'imposition ...",
+                                "4":"Trouver un indicateur actif ...",
+
+                            }
+                        }
+
+            },
+        },
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by province code, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
+        {title:"provinceCode", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Provincial Code ..."},
+        {title:"taxRate", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate ..."},
+        {title:"label1", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate Label ..."},
+        {title:"active", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active indicator ..."},
+
+    ],
+});
+
+columns: ['', '', '', '', '']
+
+
+//set language
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+</script>
+{% endblock %}

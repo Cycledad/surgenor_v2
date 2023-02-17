@@ -1,0 +1,112 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="manageParts-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+    partNbr = rowData[1];
+    partDesc = rowData[2];
+    partSupplierId = rowData[3];
+    partQuantity = rowData[4];
+    partInStock = rowData[5];
+    partDateOutOfStock = rowData[6];
+    partDateCreated = rowData[7];
+    value = id + "," + partNbr + "," + partDesc + "," +  partSupplierId + "," + partQuantity + "," + partInStock + "," +  partDateOutOfStock + "," + partDateCreated
+    URL = "/api/data/manageParts?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#manageParts-table",
+{
+
+    ajaxURL: "/api/data/manageParts",
+    height:"311px",
+    //layout:"fitData",
+    layout:"fitColumns",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by Department name, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
+        {title:"partNbr", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
+        {title:"partDesc", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Description ..."},
+        {title:"partSupplierId", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Id ..."},
+        {title:"partQuantity", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Quantity ..."},
+        {title:"partInStock", field:"5", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part In Stock ..."},
+        {title:"partDateOutOfStock", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Out of Stock ..."},
+        {title:"partDateCreated", field:"7", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Created ..."},
+    ],
+});
+
+columns: ['', '', '', '', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+
+
+</script>
+{% endblock %}

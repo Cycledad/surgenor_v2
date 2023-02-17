@@ -1,0 +1,26 @@
+git init
+git --version
+git status
+git add <filename>
+git add -A
+git commit -m "add a comment to each commit"
+git push
+git status --short
+git log --neline
+git help --all
+
+github: 2muchLovefor5wives
+
+To revert to a previous version:
+- git log --oneline    <= find hashtag
+- git restore <hashtag>
+
+To create requirements file:
+PIP FREEZE > REQUIREMENTS.TXT
+
+To install packages using requirements.txt:
+PIP INSTALL -R REQUIREMENTS.TXT
+
+Pythonanywhere:
+bulk upload: git clone https://..........
+username: wayneraid/Ilike2code

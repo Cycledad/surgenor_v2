@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>List Purchase Orders</h1>
+
+    <!---<table id="table_idx"  class="display">  -->
+ <table id="myTable" class="table order-list" style="width: 100%"> <!---style="table-layout: fixed ; width: 100%;"  -->
+    <thead>
+        <tr class="col-sm-3">
+            <th>Purchaser Order Nbr</th>
+            <th>Order id</th>
+            <th>Purchaser</th>
+            <th>Purchase Order Number</th>
+            <th>Supplier</th>
+            <th>Part Number</th>
+            <th>Part Description</th>
+            <th>Quantity</th>
+            <th>Part Price</th>
+            <th>Total Cost</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for row in range(rowColData|length): %}
+    <tr>
+        <td> {{rowColData[row][0]}}</td>
+        <td> {{rowColData[row][1]}}</td>
+        <td> {{rowColData[row][2]}}</td>
+        <td> {{rowColData[row][3]}}</td>
+        <td> {{rowColData[row][4]}}</td>
+        <td> {{rowColData[row][5]}}</td>
+        <td> {{rowColData[row][6]}}</td>
+        <td> {{rowColData[row][7]}}</td>
+        <td> {{rowColData[row][8]}}</td>
+        <td> {{rowColData[row][9]}}</td>
+    </tr>
+    {% endfor %}
+
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Purchaser Order Nbr</th>
+                <th>Order id</th>
+                <th>Purchaser</th>
+                <th>Purchase Order Number</th>
+                <th>Supplier</th>
+                <th>Part Number</th>
+                <th>Part Description</th>
+                <th>Quantity</th>
+                <th>Part Price</th>
+                <th>Total Cost</th>
+            </tr>
+        </tfoot>
+    </table>
+
+{% endblock content %}

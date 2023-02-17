@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>you have reached addRow</h1>
+
+<form action="#" method="post">
+    <div class="form-group">
+        <label for="PONbr">Purchase Order Number</label>
+        <input type="text" class='form-control' name="PONbr" id="PONbr" required>
+    </div>
+    <div class="form-group">
+        <label for="selectpurchaser">Purchaser</label>
+        <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
+            <option value="">--Please select a purchaser--</option>
+                {% for purchaserName in listPurchaserName: %}
+                    <option value={{purchaserName}}>{{purchaserName}}</option>
+                {% endfor %}
+        </select>
+        <!--<input type="text" class='form-control' name="purchaser" id="purchaser" required>-->
+    </div>
+    <!-- <div class="form-group">
+        <label for="supplier">Supplier</label>
+        <input type="text" class='form-control' name="supplier" id="supplier" required>
+    </div>  --->
+
+
+
+
+
+
+
+
+    <table id="myTable"  class="table order-list table-sm">
+<!-- <table id="myTable" class="table order-list" style="width: 100%"> style="table-layout: fixed ; width: 100%;"-->
+    <thead>
+        <tr class="col-sm-3">
+            <td>Part Number</td>
+            <td>Part</td>
+            <td>Supplier</td>
+            <td>Quantity</td>
+            <td>Unit</td>
+            <td>Unit price</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="col-sm-6">
+                <div class="form-group">
+                    <select name="selectPartNbr" id="selectPartNbr" class='form-control' required >
+                        <option value=''>--Please select a part nbr</option>
+                        {% for partNbr in listPartNbr: %}
+                        <option value={{partNbr}}>{{partNbr}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group">
+                    <select name="selectPartDesc" id="selectPartDesc" class='form-control' required>
+                            {% for part in listPartDesc: %}
+                                <option value={{part}}>{{part}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group">
+                    <select name="selectSupplier" id="selectSupplier" class='form-control' required>
+                        <option value=''>--Please select a supplier---</option>
+                        {% for supplier in listSupplierNames: %}
+                                <option value={{supplier}}>{{supplier}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group">
+                    <input type="text" name="quantity" id="quantity" class='form-control' required/>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <select name="selectUnit" id="selectUnit" class='form-control' required>
+			        <option value="">--Please select a unit--</option>
+				        {% for unit in listUnits: %}
+                            <option value={{unit}}>{{unit}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="form-group">
+                    <input type="text" name="unitprice" id="unitprice" class='form-control' required/>
+                </div>
+            </td>
+            <td class="col-sm-2"><a class="deleteRow"></a>
+
+            </td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: left;">
+                <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+            </td>
+        </tr>
+        <tr>
+        </tr>
+    </tfoot>
+</table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="form-group">
+        <button class="btn btn-default" type="submit">lets post back</button>
+    </div>
+</form>
+
+
+{% endblock content %}

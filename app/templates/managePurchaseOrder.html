@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="example-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateDate(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateDate(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+var updateReturnQuantity = (cell) =>
+{
+    //alert("say it");
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
+
+    let id = rowData["1"];
+    let returnQuantity = rowData[14];
+
+    if (returnQuantity < 0) {
+        if (lang == 'en') {
+            msg = "Quantity can not be less than 0!";
+        } else {
+            msg = "La quantité ne peut pas être inférieure à 0!";
+        }
+        alert(msg);
+    } else {
+        if (isNaN(returnQuantity)) {
+            if (lang == 'en') {
+                msg = "Not a number!!";
+            } else {
+                msg = "Pas un numéro !!";
+            }
+            alert(msg);
+        }
+        else {
+            let quantityOrdered = rowData[9];
+            if (returnQuantity > quantityOrdered) {
+                if (lang == 'en')
+                {
+                    msg = "Quantity returned can not exceed quantity ordered!";
+                }
+                else {
+                    msg = "La quantité retournée ne peut excéder la quantité commandée !";
+                }
+
+                alert(msg);
+            }
+            else {
+                let value = id + "," + returnQuantity
+                URL = "/api/data/managePurchaseOrder?action=updateReturnQuantity&value=" + value
+            };
+        };
+    };
+    table.setData(URL);  // retrieve original data or update data
+};
+
+var updateOrderQuantity = (cell) =>
+{
+    //alert("say it");
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
+    let id = rowData["1"];
+    let orderQuantity = rowData[9];
+    if (isNaN(orderQuantity)) {
+        if (lang == 'en') {
+            msg = "Not a number!!";
+        } else {
+            msg = "Pas un numéro !!";
+        }
+        alert(msg);
+    }
+    else {
+        if (orderQuantity < 1) {
+            if (lang == 'en') {
+                msg = "Order quantity can not be less than 1!";
+            }
+            else {
+                msg = "La quantité de commande ne peut pas être inférieure à 1!";
+            }
+            alert(msg);
+        }
+        else {
+            value = id + "," + orderQuantity
+            URL = "/api/data/managePurchaseOrder?action=updateOrderQuantity&value=" + value
+        };
+    };
+     table.setData(URL);
+};
+
+var updateReceivedBy = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData["1"];
+    receivedBy = rowData[12];   //receivedBy
+    value = id + "," + receivedBy;
+    //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+    URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
+    //debugger;
+    table.setData(URL);
+    //debugger;
+    //rowData[11].setFocus
+
+};
+
+var updateActive = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData["1"];
+    activeFlg = rowData[17];   //active indicator flag
+    value = id + "," + activeFlg;
+    securityLevel = rowData[18]
+    if (securityLevel < 5) {
+        if (lang == 'en')
+        {
+            msg = "You must have security level 5 to modify Order Active indicator";
+        }
+        else
+        {
+            msg = "Vous devez avoir le niveau de sécurité 5 pour modifier l'indicateur actif de l'ordre";
+        }
+        alert(msg);
+         // i need to do this to pull/reset original column data from db
+        URL = "/api/data/managePurchaseOrder";
+        table.setData(URL);
+    } else {
+        //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+        URL = "/api/data/managePurchaseOrder?action=activeFlg&value=" + value;
+        //debugger;
+        table.setData(URL);  //update
+        //debugger;
+        //rowData[12].setFocus
+    }
+
+
+};
+
+var parmLookup = (cell) =>
+{
+    //debugger;
+    //used to populate dropdown for receivedby
+    return ({valuesURL: "/getPurchaserName"})
+}
+
+
+/*
+var updateReceivedBy = (cell) =>
+{
+    //alert("say it");
+
+    //var xhr = new XMLHttpRequest();
+    //var URL = "/api/data/managePurchaseOrder?action=getPurchaser"
+    //xhr.open("GET", URL, true);
+    //xhr.onreadystatechange= function () {
+    //    if (this.readyState == 4 && this.status == 200) {
+    //        alert(this.responseText);
+    //        alert(this.responseText[0]);
+    //        rowData[13] = this.responseText;
+    //    }
+    //  }
+    //xhr.send();
+    //debugger
+    //editorParams:{values:["Kevin", "Jessie"]}
+    // Url for the request
+
+    var url = 'http://127.0.0.1:5000/api/data/managePurchaseOrder?action=getPurchaser';
+
+    // Making our request
+    fetch(url, { method: 'GET' })
+        .then(Result => Result.json())
+        .then(string => {
+
+            // Printing our response
+            console.log(string);
+
+            // Printing our field of our response
+            console.log(`string 0:  ${string[0]}`);
+            editorParams.values = ['wayne', 'chantal']
+        })
+        .catch(errorMsg => { console.log(errorMsg); });
+
+
+
+    //var row = cell.getRow();
+    //var rowData = row.getData();
+    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    //id = rowData["1"];
+    //receivedBy = rowData[14];
+
+
+};
+
+
+*/
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+debugger;
+//Build Tabulator
+var table = new Tabulator("#example-table",
+{
+
+    //ajaxURL: "/api/data",
+    ajaxURL: "/api/data/managePurchaseOrder",
+    height:"500px",
+    layout:"fitData",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:10,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    pagination: "local",
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "2" :"acheteur",                            //Purchaser
+                    "3" : "service des acheteurs",              //Purchaser Department
+                    "4" : "numéro de bon de commande",          //Purchase Order Number
+                    "5" : "date de commande d'achat",           //Purchase Order Date
+                    "6" : "fournisseur",                        //Supplier
+                    "7" : "numéro de pièce",                    //Part Number
+                    "8" : "description de la pièce",            //Part Description
+                    "9" : "quantité",                           //Quantity,
+                    "10" : "prix unitaire",                      //Part Price
+                    "11": "date de réception de la commande",   //Order Received Date
+                    "12": "commande reçue par",                //Order Received By
+                    "13": "date de retour de la commande",       //Order Return Date
+                    "14": "quantité de retour de commande",      //Order Return Quantity
+                    "15": "PO",                                  //PO - this is the print document PO number
+                    "16": "utilisateur",                         //User
+                    "17": "ordre actif",                         //active indicator
+                    "18": "imprimer",                            //Print
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+            "headerFilters":{
+                "default":"filter column...", //default header filter placeholder text
+                "columns":{
+                    "2":"Trouver un acheteur ...", //replace default header filter text for column name
+                    "3":"Trouver un département ...",
+                    "4":"Trouver un numéro de bon de commande ...",
+                    "5":"Trouver la date du bon de commande ...",
+                    "6":"Trouver un fournisseur ...",
+                    "7":"Trouver un numéro de pièce ...",
+                    "8":"Trouver une pièce ...",
+                }
+            }
+
+            },
+        },
+    initialSort:[
+        {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
+
+    ],
+    columns:[
+        {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"number", visible:false},
+        {title:"orderid", field:"1", hozAlign:"center", sorter:"number", visible:false},
+        {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
+        {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
+        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchase Order Number ..."},
+        {title:"Purchase Order Date", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchase Order Date ..."},
+        {title:"Supplier", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
+        {title:"Part Number", field:"7", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
+        {title:"Part Description", field:"8", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
+        {title:"Quantity", field:"9", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateOrderQuantity},
+        {title:"Part Price", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"Order Received Date", field:"11", editor:dateEditor},
+        {title:"Order Received By", field:"12", sorter: "string", editor:"list", editorParams:parmLookup, cellEdited:updateReceivedBy},
+        {title:"Order Return Date", field:"13", editor:dateEditor},
+        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateReturnQuantity},
+        {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
+        {title:"User", field:"16", hozAlign:"center", sorter:"string", editor:false},
+        {title:"Order Active", field:"17", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
+        {title:"Print", field:"18", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"securityLevel", field:"19", hozAlign:"center", sorter:"number", visible:false},
+        //column definition in the columns array
+        //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
+        //    cell.getRow().delete()}},
+        //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
+        //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
+        //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
+        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+        //{title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
+        ////{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        ],
+        });
+
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '', '', '', '', '']
+
+
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+
+
+/*
+
+cellClick:function(e, cell){
+        //e - the click event object
+        //cell - cell component
+    },
+
+
+
+var table = new Tabulator("#example-table", {
+    ajaxURL:"http://www.getmydata.com/now", //ajax URL
+});
+
+//trigger AJAX load on "Load Data via AJAX" button click
+document.getElementById("ajax-trigger").addEventListener("click", function(){
+    table.setData("/api/data");
+});
+
+*/
+
+function updateDate(cell) {
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    let id = rowData["1"]
+    let dt_order_received = rowData[11] //date order received col
+    let dt_order_returned = rowData[13] //date order returned col
+    let value= id + "," + dt_order_received + "," + dt_order_returned
+    let activeFlg = rowData[17];   //active indicator flag
+    let URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;  //update
+    let reply = false;
+
+    if (dt_order_received !== null && activeFlg == 1) {
+         if (lang == 'en') {
+            reply = confirm("Updating Order Received Date will close this order!");
+         } else {
+             reply = confirm("La date de mise à jour de la date reçue fermera cette commande!");
+         }
+         if (reply) {
+             table.setData(URL); //update
+         } else {
+            // i need to do this to pull/reset original column data from db
+            URL = "/api/data/managePurchaseOrder";
+            table.setData(URL);
+         }
+    } else {
+         table.setData(URL);  //update
+    }
+
+
+
+    //URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    //table.setData(URL);
+
+
+}
+
+
+function printit(e,row)
+{
+    debugger;
+    //row.getData()[colnbr], i.e. row.getData()[1]
+    orderNbr = row.getData()["4"]  //orderNbr
+    value= orderNbr
+    URL = "/api/data/managePurchaseOrder?action=printOrder&value=" + value;
+    //URL = "/viewDoc=printOrder&value=" + value;
+    //xhttp = new XMLHttpRequest();
+    //xhttp.open("GET", URL);
+    //xhttp.send();
+    table.setData(URL);
+
+}
+
+
+
+</script>
+{% endblock %}

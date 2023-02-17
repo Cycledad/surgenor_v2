@@ -1,0 +1,139 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+<p>
+    Total number of purchase orders: {{ purchaseOrders }}
+</p>
+<p>
+    Total number of parts ordered: {{ orders }}
+</p>
+<p>
+    Total number of registered users: {{ users }}
+</p>
+<p>
+    Total number of suppliers: {{ suppliers }}
+</p>
+<p>
+    Total number of purchasers: {{ purchaser }}
+</p>
+<p>
+    Total number of departments: {{ department }}
+</p>
+<hr>
+<p>
+    Items ordered by count:
+    <table>
+    {% for row in orderByCount: %}
+    <tr>
+        <td> {{ row[0] }}</td>
+        <td> ==> </td>
+        <td> {{ row[1] }}</td>
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Number of orders by month:
+    <table>
+    {% for row in orderByMonth: %}
+    <tr>
+        <td> {{ row[0] }}  ==>  </td>
+        <td> {{ row[1] }}</td>
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Active Departments:
+    <table>
+    {% for row in activeDepts: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Inactive Departments:
+    <table>
+    {% for row in inActiveDepts: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Active Purchasers:
+    <table>
+    {% for row in activePurchasers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+Inactive Purchasers:
+    <table>
+    {% for row in inActivePurchasers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+
+<hr>
+
+Active Suppliers:
+    <table>
+    {% for row in activeSuppliers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Inactive Suppliers:
+    <table>
+    {% for row in InActiveSuppliers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Active Users:
+    <table>
+    {% for row in activeUsers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+
+
+<hr>
+
+Inactive Users:
+    <table>
+    {% for row in inActiveUsers: %}
+    <tr><br>
+        {{row}}
+    </tr>
+     {% endfor %}
+    </table>
+
+
+
+{% endblock content %}

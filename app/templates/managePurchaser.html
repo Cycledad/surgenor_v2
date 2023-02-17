@@ -1,0 +1,165 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="managePurchaser-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+	purchaserName = rowData[1];
+	purchaserDeptId = rowData[2];
+	purchaserActive = rowData[3];
+	purchaserDateInActive = rowData[4];
+	purchaserDateCreated = rowData[5];
+    value = id + "," + purchaserName + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated
+    URL = "/api/data/managePurchaser?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#managePurchaser-table",
+{
+
+    ajaxURL: "/api/data/managePurchaser",
+    height:"311px",
+    layout:"fitColumns",
+    //layout:"fitDataFill",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "nom de l’acheteur",                  //purchaserName
+                    "2" : "service des acheteurs",              //purchaserDeptId
+                    "3" : "acheteur actif",                     //purchaserActive
+                    "4" : "acheteur date d’inactivité",         //purchaserDateInActive
+                    "5" : "acheteur date de création",          //purchaserDateCreated
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+                        "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver le nom de l’acheteur ...", //replace default header filter text for column name
+                                "2":"Trouver l’ID du département acheteur ...",
+                                "3":"Trouver un acheteur actif ...",
+                                "4":"Trouver Date Inactive ...",
+                                "5":"Trouver la date de création ...",
+                            }
+                        }
+
+            },
+        },
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by Department name, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
+        {title:"purchaserName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Name ..."},
+        {title:"purchaserDeptId", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Department Id ..."},
+        {title:"purchaserActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Purchaser ..."},
+        {title:"purchaserDateInActive", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        {title:"purchaserDateCreated", field:"5", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+    ],
+});
+
+columns: ['', '', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+table.on('tableBuilt', function(){
+
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
+
+</script>
+{% endblock %}
