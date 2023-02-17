@@ -6,7 +6,7 @@ git add -A
 git commit -m "add a comment to each commit"
 git push
 git status --short
-git log --neline
+git log --oneline
 git help --all
 
 github: 2muchLovefor5wives
@@ -24,3 +24,5 @@ PIP INSTALL -R REQUIREMENTS.TXT
 Pythonanywhere:
 bulk upload: git clone https://..........
 username: wayneraid/Ilike2code
+
+git push --set-upstream origin master
