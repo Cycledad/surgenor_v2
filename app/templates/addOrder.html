@@ -40,7 +40,7 @@
                    {% if 'partNumber' in session %} {{ session['partNumber'] }} {% else %} Part Number{% endif %}
                </div>
                <div class="col-4">
-                   {% if 'partDescription' in session %} {{ session['partDescription'] }} {% else %} Part Description{% endif %}
+                   {% if 'partDescription' in session %} {{ session['description'] }} {% else %} Description{% endif %}
                </div>
                 <div class="col-2">
                     {% if 'unitPrice' in session %} {{ session['unitPrice'] }} {% else %} Unit price{% endif %}
@@ -61,7 +61,7 @@
 
                 <div class="col-1">
                     <div class="input-group mb-3">
-                         <input type="number" step="0" name="quantity" id="quantity" class='form-control' required />
+                         <input type="number" step="0" min=0 name="quantity" id="quantity" class='form-control' required />
                     </div>
                 </div>
 
@@ -73,13 +73,13 @@
 
                 <div class="col-4">
                     <div class="input-group mb-3">
-                          <input type="text" name="partDesc" id="partDesc" class='form-control'  required />
+                        <textarea name="desc" id="desc rows=2 cols=2" class='form-control'  required></textarea>
                     </div>
                 </div>
 
                 <div class="col-2">
                     <div class="input-group mb-3">
-                        <input type="number" step="any" name="unitprice" id="unitprice" class='form-control' required/>
+                        <input type="number" step="any" min=0 name="unitprice" id="unitprice" class='form-control' required/>
                     </div>
                 </div>
 

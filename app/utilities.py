@@ -771,7 +771,7 @@ def insertOrder(parms) -> None:
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -1492,7 +1492,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['orderPurchaser'] = 'Veuillez sélectionner un acheteur'
             session['quantity'] = 'quantité'
             session['partNumber'] = 'Numéro de pièce'
-            session['partDescription'] = 'Description de la pièce'
+            session['description'] = 'Description'
             session['unitPrice'] = 'Prix unitaire'
             session['selectSupplier'] = 'Sélectionner un fournisseur'
             session['addRow'] = 'Ajouter une ligne'
@@ -1555,7 +1555,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['orderPurchaser'] = 'Please select a purchaser'
             session['quantity'] = 'Quantity'
             session['partNumber'] = 'Part Number'
-            session['partDescription'] = 'Part Description'
+            session['description'] = 'Description'
             session['unitPrice'] = 'Unit Price'
             session['selectSupplier'] = 'select a supplier'
             session['addRow'] = 'Add Row'

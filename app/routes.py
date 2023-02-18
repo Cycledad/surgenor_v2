@@ -834,7 +834,7 @@ def viewDoc():
             # was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
             # problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
             # write protect document, IROTH = can be read by others
-            fname = req['selFile']
+            #fname = req['selFile']
             # filePathName = directory + fname
             # os.chmod(filePathName, stat.S_IRWXO )
 
@@ -842,6 +842,11 @@ def viewDoc():
             return send_from_directory(directory, fname, as_attachment=True)
             print(f'just after send file: {directory}')
             # os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
+
+            #as per Kevin Feb 18, 2023, delete file once printed
+            if os.path.exists(directory):
+                fname = constants.DOC_DIRECTORY + fname
+                os.remove(fname)
 
         # remove/separate directory from filename
         theList = []
@@ -862,7 +867,7 @@ def viewDoc():
     except Exception as e:
         print(f'problem in viewDoc: {e}')
 
-
+#no longer used as per Kevin Fri Feb 17, 2023
 @app.route('/stats', methods=['GET'])
 def stats():
     try:
