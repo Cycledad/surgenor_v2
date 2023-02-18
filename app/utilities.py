@@ -8,6 +8,7 @@ import docx
 import webbrowser
 import requests
 
+
 from urllib.parse import urljoin
 #from docx2html import convert
 
@@ -221,18 +222,14 @@ def updateProvincialTaxRates(parms):
 
 
 
-def updateSupplier(id: int, supplierName: str, supplierAddr: str, supplierTel: str, supplierEmail: str,
-                   supplierContact: str, supplierActive: bool, supplierDateInActive: str,
-                   supplierDateCreated: str) -> None:
+def updateSupplier(id: int, supplierName: str, supplierProv: str, supplierActive: bool, supplierDateCreated: str) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parms = (
-        supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive,
-        supplierDateCreated, id,)
-        stmt = 'update Supplier set supplierName = ?, supplierAddr = ?, supplierTel = ?, supplierEmail = ?, supplierContact = ?, supplierActive = ?, supplierDateInActive = ?, supplierDateCreated = ? where id = ?'
+        parms = (supplierName, supplierProv, supplierActive, supplierDateCreated, id,)
+        stmt = 'update Supplier set supplierName = ?, supplierProv = ?, supplierActive = ?, supplierDateCreated = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -278,7 +275,7 @@ def updateUser(id: int, username: str, password: str, createDate: str, active: b
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -292,7 +289,7 @@ def getSupplierName(id: int) -> str:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (id,)
-        stmt = 'select supplierName from supplier where id = ? and supplierActive is True'
+        stmt = 'select supplierName from supplier where id = ? and supplierActive'
         # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -377,7 +374,7 @@ def getSupplierId(Name: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (Name,)
-        stmt = 'select Id from supplier where supplierName = ? and supplierActive is True'
+        stmt = 'select Id from supplier where supplierName = ? and supplierActive'
         # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -414,18 +411,18 @@ def getALLSupplierName() -> list:
         print(f'problem in getALLSupplierName: {e}')
 
 
-def insertSupplier(parms):
+def insertSupplier(parms) -> None:
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO supplier (supplierName, supplierAddr, supplierProv, supplierContact, supplierEmail, supplierTel, supplierActive, supplierDateCreated) values (?, ?, ?, ?, ?, ?, ?, ?)'
+        stmt = 'INSERT INTO supplier (supplierName, supplierProv, supplierActive, supplierDateCreated) values (?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in insertSupplier: {e}')
@@ -1103,7 +1100,8 @@ def createPrintDoc(orderList: list) -> None:
 
 
         createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId, orderTotalCost)
-        return()
+
+        return
 
     except Exception as e:
         print(f'problem in createPrintDoc: {e}')
@@ -1168,6 +1166,7 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
 
         #doc.save(Path(__file__).parent / myDoc)
         doc.save(myDoc)
+
 
         #write protect document, IROTH = can be read by others
         #os.chmod(myDoc, stat.S_IROTH)
@@ -1595,3 +1594,36 @@ def getActive(tableName: str, colName: str, btrue: bool) -> list:
         print(f'problem in getActive: {e}')
 
 
+def printDoc():
+    try:
+
+        from flask import send_from_directory, send_file
+        from io import BytesIO
+        import glob
+        from docx import Document
+
+        theList = []
+        fname = constants.DOC_DIRECTORY + '*.docx'
+        docList = glob.glob(fname)
+
+        for i in range(len(docList)):
+            x = docList[i].replace('\\', '/')
+            x = x.rsplit('/')
+            theList.append(x[len(x) - 1])
+
+
+        theList.sort()
+        directory = constants.DOC_DIRECTORY
+        for doc in theList:
+            fname = directory + doc
+            doc = Document()
+            f = BytesIO()
+            doc.save(f)
+            f.seek(0)
+
+            return send_file(f, as_attachment=True, download_name=fname)
+
+
+
+    except Exception as e:
+        print(f'problem in printDoc: {e}')

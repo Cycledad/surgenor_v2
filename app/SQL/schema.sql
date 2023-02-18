@@ -50,6 +50,7 @@ INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, Orde
 values(10, 1, 1, 1, 1, 20.50, 20.50, DATE('now'));
 */
 
+/*
 DROP TABLE IF EXISTS Part;
 CREATE TABLE Part (
 	id INTEGER NOT NULL,
@@ -57,13 +58,16 @@ CREATE TABLE Part (
 	partDesc TEXT NOT NULL,
 	partSupplierId INTEGER,
 	partQuantity INTEGER NOT NULL,
-	partInStock BOOLEAN NOT NULL,  /* boolean */
-	partDateOutOfStock TEXT,
+	partInStock BOOLEAN NOT NULL,
 	partDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE ("partNbr"),
 	FOREIGN KEY(partSupplierId) REFERENCES Supplier (id)
 );
+*/
+
+
+
 /*
 INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A1000', 'BOLT', 1, 20, True, "20220101");
 INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A2000', 'CHAIN', 2, 20, False, "25122022");
@@ -138,13 +142,13 @@ DROP TABLE IF EXISTS Supplier;
 CREATE TABLE Supplier (
 	id INTEGER NOT NULL,
 	supplierName TEXT NOT NULL,
-	supplierAddr TEXT NOT NULL,
+	--supplierAddr TEXT NOT NULL,
 	supplierProv TEXT NOT NULL,
-	supplierTel TEXT NOT NULL,
-	supplierEmail TEXT NOT NULL,
-	supplierContact TEXT NOT NULL,
+	--supplierTel TEXT NOT NULL,
+	--supplierEmail TEXT NOT NULL,
+	--supplierContact TEXT NOT NULL,
 	supplierActive BOOLEAN NOT NULL,    /* boolean */
-	supplierDateInActive TEXT,
+	--supplierDateInActive TEXT,
 	supplierDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 	--UNIQUE (supplierAddr),
@@ -153,8 +157,8 @@ CREATE TABLE Supplier (
 	--UNIQUE (supplierContact)
 );
 
-INSERT INTO Supplier(supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
-values('Benson', '95 Boul Greber', 'QC', '8196696555', 'N@A', 'NA', true, DATE('now'));
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive, supplierDateCreated)
+values('Benson', 'QC', true, DATE('now'));
 /*
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Canadian Tire', '2 Dump Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wrong', true, '28012022');
@@ -162,6 +166,7 @@ INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, sup
 values('Window Max', '2 Glass Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wright', true, '28012022');
 */
 
+/*
 DROP TABLE IF EXISTS Unit;
 CREATE TABLE Unit (
 	id INTEGER NOT NULL,
@@ -172,6 +177,7 @@ CREATE TABLE Unit (
 INSERT INTO Unit(unitDesc) values('KG');
 INSERT INTO Unit(unitDesc) values('POUNDS');
 INSERT INTO Unit(unitDesc) values('PIECES');
+*/
 
 
 DROP TABLE IF EXISTS OrderNbrTbl;

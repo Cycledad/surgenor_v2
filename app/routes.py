@@ -86,16 +86,14 @@ def addSupplier():
         if request.method == "POST":
             req = request.form
             supplierName = req['supplierName']
-            supplierAddr = req['supplierAddr']
+            #supplierAddr = req['supplierAddr']
             supplierProv = req['supplierProv']
-            supplierContactName = req['supplierContactName']
-            supplierTel = req['supplierTel']
-            supplierEmail = req['supplierEmail']
+            #supplierContactName = req['supplierContactName']
+            #supplierTel = req['supplierTel']
+            #supplierEmail = req['supplierEmail']
             supplierActive = True
             supplierDateCreated = dt.date.today()
-            parms = (
-            supplierName, supplierAddr, supplierProv, supplierContactName, supplierEmail, supplierTel, supplierActive,
-            supplierDateCreated)
+            parms = (supplierName, supplierProv, supplierActive, supplierDateCreated)
             utilities.insertSupplier(parms)
 
     except Exception as e:
@@ -465,6 +463,8 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
 
+        utilities.printDoc()
+
         # return render_template('viewDoc.html', docName=docPath)
         # session['fname'] = fname
         # return redirect(url_for('viewDoc'))
@@ -551,22 +551,27 @@ def apimanageSupplier():
         myList = value.split(',')
         id = int(myList[0])
         supplierName = myList[1]
-        supplierAddr = myList[2]
-        supplierProv = myList[3]
-        supplierTel = myList[4]
-        supplierEmail = myList[5]
-        supplierContact = myList[6]
-        supplierActive = myList[7]
-        supplierDateInActive = myList[8]
-        supplierDateCreated = myList[9]
+        supplierProv = myList[2]
+        supplierDateInActive = myList[3]
+        supplierDateCreated = myList[4]
+        #supplierAddr = myList[2]
+        #supplierProv = myList[3]
+        #supplierTel = myList[4]
+        #supplierEmail = myList[5]
+        #supplierContact = myList[6]
+        #supplierActive = myList[7]
+        #supplierDateInActive = myList[8]
+        #supplierDateCreated = myList[9]
 
-        utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
-                                 supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
+        utilities.updateSupplier(id, supplierName, supplierProv, supplierDateInActive, supplierDateCreated)
+
+        #utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
+        #                         supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Supplier')
     for row in resultList:
-        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+        aList = (row[0], row[1], row[2], row[3], row[4])
         d1 = dict(enumerate(aList))
         myList.append(d1)
     x = json.dumps(myList)
@@ -622,9 +627,9 @@ def manageSupplier():
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
-        if session['securityLevel'] < constants.GOD_LEVEL:
-            flash(session['securityLevel5'], 'warning')
-            return redirect(url_for('adminHome'))
+        #if session['securityLevel'] < constants.GOD_LEVEL:
+        #    flash(session['securityLevel5'], 'warning')
+        #    return redirect(url_for('Adminhome'))
 
     except Exception as e:
         print(f'problem in manageSupplier: {e}')

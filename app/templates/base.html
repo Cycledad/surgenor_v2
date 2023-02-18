@@ -49,6 +49,15 @@
                             <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">{% if 'viewPrint' in session %} {{ session['viewPrint'] }} {% else %} View/Print Purchase Order {% endif %}</a></li>
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Supplier
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('addSupplier')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                              <li><a class="dropdown-item" href="{{url_for('manageSupplier')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            </ul>
+                    </li>
                     <a class="nav-item nav-link" href="{{url_for('adminHome')}}">{% if 'admin' in session %} {{ session['admin'] }} {% else %} Admin {% endif %}</a>
                 </div>
 

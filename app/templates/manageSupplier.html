@@ -1,4 +1,4 @@
-{% extends 'AdminBase.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 
@@ -134,18 +134,21 @@ var table = new Tabulator("#manageSupplier-table",
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
         {title:"supplierName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Name ..."},
-        {title:"supplierAddr", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Address ..."},
-        {title:"supplierProv", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Province ..."},
-        {title:"supplierTel", field:"4", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Telephone ..."},
-        {title:"supplierEmail", field:"5", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Email ..."},
-        {title:"supplierContact", field:"6", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Contact Name ..."},
-        {title:"supplierActive", field:"7", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Suppliers ..."},
-        {title:"supplierDateInActive", field:"8", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Inactive ..."},
-        {title:"supplierDateCreated", field:"9", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
+        {title:"supplierProv", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Province ..."},
+        {title:"supplierActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Suppliers ..."},
+        {title:"supplierDateCreated", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
+        //{title:"supplierAddr", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Address ..."},
+        //{title:"supplierProv", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Province ..."},
+        //{title:"supplierTel", field:"4", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Telephone ..."},
+        //{title:"supplierEmail", field:"5", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Email ..."},
+        //{title:"supplierContact", field:"6", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Contact Name ..."},
+        //{title:"supplierActive", field:"7", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Suppliers ..."},
+        //{title:"supplierDateInActive", field:"8", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Inactive ..."},
+        //{title:"supplierDateCreated", field:"9", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
     ],
 });
 
-columns: ['', '', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '']
 
 
 //cellEdited:updateCol,
