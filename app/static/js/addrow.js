@@ -1,7 +1,7 @@
 $(document).ready(function ()
 {
 
-//re-worked with Natahns help. Increased the length of part desc input as per kevin.
+//re-worked with Nathan's help. Increased the length of part desc input as per kevin.
 
     var counter = 0;
 
@@ -14,7 +14,7 @@ $(document).ready(function ()
         var selectSupplier = '';
         selectSupplier = '<div class="col-2"><div class="input-group mb-3"><select name="selectSupplier' + counter + '" class=\'form-control\' id="selectSupplier' + counter + '" required >';
         debugger;
-        if (document.getElementById("lang").innerHTML == 'en'){
+        if (document.getElementById("lang").innerHTML == 'en-us'){
             selectSupplier += '<option value="">-- Supplier --</option>';
         }
         else {

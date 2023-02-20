@@ -7,36 +7,40 @@
 
 <form action="#" method="post" class="form-group">
     <div class="form-group">
+        {% if docList[0] == 'no files found' %}
+        <br>
+        <h2>{% if 'noPrint' in session %} {{ session['noPrint'] }} {% else %} No Purchaser Orders to Print {% endif %}</h2>
 
-        <div class="container">
+        {% else %}
+            <div class="container">
+                    {% set pname = namespace(name='') %}
 
-                {% set pname = namespace(name='') %}
+                    {% for f in docList: %}
 
-                {% for f in docList: %}
+                        {% set fname = f.split('_') %}
 
-                    {% set fname = f.split('_') %}
+                        {% if pname.name != fname[0] %}
+                            <br>
+                            <b>{{fname[0]}}</b>
+                            <br>
+                        {% endif %}
 
-                    {% if pname.name != fname[0] %}
+                        <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}'>
+                        <label for="selFile1">{{ f }}</label>
                         <br>
-                        <b>{{fname[0]}}</b>
-                        <br>
-                    {% endif %}
 
-                    <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}'>
-                    <label for="selFile1">{{ f }}</label>
-                    <br>
+                        {% set pname.name = fname[0] %}
 
-                    {% set pname.name = fname[0] %}
+                    {% endfor %}
 
-                {% endfor %}
-
-            <br>
-            <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
-
-        </div>
+                <br>
+                <button type="submit" class="btn btn-primary mt-4 bg-steel" onclick="windowReload()">Submit</button>
+            </div>
+        {% endif %}
     </div>
 </form>
 
-
+<!-- <script src="/static//js/windowReload.js"></script> -->
 
 {% endblock content %}
+

@@ -4,12 +4,14 @@ import random
 import sqlite3
 import stat
 
+
 import docx
 import webbrowser
 import requests
 
 
 from urllib.parse import urljoin
+
 #from docx2html import convert
 
 # URL for print routine: https://www.youtube.com/watch?v=fziZXbeaegc&list=PL7QI8ORyVSCavY8MYL3dM54SviNlnEA3T&index=11
@@ -18,7 +20,7 @@ from pathlib import Path
 
 from docxtpl import DocxTemplate
 
-from app import app, constants
+from app import app, constants, myGlobals
 
 
 def getDatabase(dataBaseName: str) -> str:
@@ -203,19 +205,19 @@ def updateParts(id: int, partNbr: int, partDesc: str, partSupplierId: int, partQ
     except Exception as e:
         print(f'problem in updateParts: {e}')
 
-def updateProvincialTaxRates(parms):
+def updateProvincialTaxRates(parms) -> None:
 
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'update ProvincialTaxRates set provincialCode = ?, taxRate = ?, label = ?, active = ? where id = ?'
+        stmt = 'update ProvincialTaxRates set provincialCode = ?, taxRate = ?, label = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return()
+        return
 
     except Exception as e:
         print(f'problem in updateProvincialTaxRates: {e}')
@@ -305,18 +307,18 @@ def getSupplierName(id: int) -> str:
         print(f'problem in getSupplierName: {e}')
 
 
-def insertPurchaser(parms):
+def insertPurchaser(parms) -> None:
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO Purchaser (purchaserName, purchaserDeptId, purchaserActive, purchaserDateCreated) values (?, ?, ?, ?)'
+        stmt = 'INSERT INTO Purchaser (purchaserName, purchaserDeptId, purchaserActive) values (?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -416,7 +418,7 @@ def insertSupplier(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO supplier (supplierName, supplierProv, supplierActive, supplierDateCreated) values (?, ?, ?, ?)'
+        stmt = 'INSERT INTO supplier (supplierName, supplierProv, supplierActive) values (?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -433,13 +435,13 @@ def insertDepartment(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO Department (deptName, active, dateCreated) values (?, ?, ?)'
+        stmt = 'INSERT INTO Department (deptName, active) values (?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in insertDepartment: {e}')
@@ -760,9 +762,12 @@ def insertOrder(parms) -> None:
         orderUsername = parms[6]
 
         #rebuild parms adding deptname, po and username
-        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, 1, )
+        #params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, 1)
+        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername)
 
-        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername, orderActive ) values (?,?,?,?,?,?,?,?,?,?)'
+        #ACTIVE INDICATOR NOW SET AS DEFAULT IN DB
+        #stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername, orderActive ) values (?,?,?,?,?,?,?,?,?,?)'
+        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?,?)'
         cur.execute(stmt, params)
         cur.close()
         conn.commit()
@@ -780,17 +785,19 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        orderDt = datetime.date.today()
+        #orderDt = datetime.date.today() - now set as default in db
         receivedDt = ''
-        Active = True
-        parms = (orderDt, receivedDt, Active, purchaseOrderNbr, purchaserId, purchaserDept)
-        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
+        #Active = True - now set as default in db
+        #parms = (orderDt, receivedDt, Active, purchaseOrderNbr, purchaserId, purchaserDept)
+        parms = (receivedDt, purchaseOrderNbr, purchaserId, purchaserDept)
+        #stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
+        stmt = 'INSERT INTO PurchaseOrder(PurchaseOrderReceivedDate, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -982,11 +989,12 @@ def registerUser(username: str, hashed_pw: int) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        createdate = datetime.date.today()
-        active = True
+        #createdate = datetime.date.today() - now set as default in db
+        #active = True - now set as default in db
         securityLevel = 0
-        parm = (username, hashed_pw, createdate, active, securityLevel)
-        stmt = "insert into user (username, password, createDate, active, securityLevel) values(?, ?, ?, ?, ?)"
+        parm = (username, hashed_pw, securityLevel, )
+        #parm = (username, hashed_pw, createdate, active, securityLevel)
+        stmt = "insert into user (username, password, securityLevel) values(?, ?, ?)"
         cur.execute(stmt, parm)
         conn.commit()
         cur.close()
@@ -994,7 +1002,7 @@ def registerUser(username: str, hashed_pw: int) -> None:
         return
 
     except Exception as e:
-        print(f'problem in updateOrderQuantity: {e}')
+        print(f'problem in registerUser: {e}')
 
 
 def getPassword(username: str) -> str:
@@ -1050,7 +1058,7 @@ def getUserRegistered(username: str) -> bool:
         if user != None:
             exists = True
 
-        return (exists)
+        return exists
 
     except Exception as e:
         print(f'problem in getUserRegistered: {e}')
@@ -1083,6 +1091,7 @@ def createPrintDoc(orderList: list) -> None:
         previousSupplierId = orderList[0][2]
         docName = orderList[0][12]
         orderTotalCost: float = 0.0
+        myGlobals.printQueue = []
 
         for order in orderList:
 
@@ -1113,16 +1122,18 @@ def buildDoc(order, myList: list, orderTotalCost: float):
         partNbr = order[4]
         partDesc = order[5]
         orderQuantity = order[6]
-        orderPartPrice = order[7]
+        orderPartPrice = order[7] if not order[7] == '' else 0.0
         orderCost = orderQuantity * orderPartPrice
         orderTotalCost += orderCost
         myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'partNbr': partNbr, 'orderCost': orderCost})
         return (myList, orderTotalCost)
+
     except Exception as e:
         print(f'problem in buildDoc: {e}')
 
 def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int, orderTotalCost: float) -> None:
     try:
+        myGlobals.printQueue.append(docName + '.docx')
         #docPath = Path(__file__).parent / templateName
         docPathTemplate = constants.TEMPLATE_DIRECTORY + templateName
         doc = DocxTemplate(docPathTemplate)
@@ -1132,10 +1143,10 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
         PONbr = purchaseOrderId
         supplierName = getSupplierName(supplierId)
-        supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
+        #supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
         supplierProv = getTableItemById(supplierId, 'Supplier', 'supplierProv')
-        supplierTel = getTableItemById(supplierId, 'Supplier', 'supplierTel')
-        supplierEmail = getTableItemById(supplierId, 'Supplier', 'supplierEmail')
+        #supplierTel = getTableItemById(supplierId, 'Supplier', 'supplierTel')
+        #supplierEmail = getTableItemById(supplierId, 'Supplier', 'supplierEmail')
         receivedBy = order[9]
 
         label1, amt1, amt2, amt3 = calcSalesTax(supplierProv, orderTotalCost)
@@ -1144,9 +1155,9 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
         context = {'supplierName': supplierName,
-                   'supplierAddr': supplierAddr,
-                   'supplierTel': supplierTel,
-                   'supplierEmail': supplierEmail,
+                   #'supplierAddr': supplierAddr,
+                   #'supplierTel': supplierTel,
+                   #'supplierEmail': supplierEmail,
                    'receivedBy': receivedBy,
                    'purchaseOrderDate': purchaseOrderDate,
                    'PONbr': PONbr,
@@ -1171,7 +1182,7 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         #write protect document, IROTH = can be read by others
         #os.chmod(myDoc, stat.S_IROTH)
 
-        return()
+        return
 
     except Exception as e:
         print(f'problem in createOrderDoc: {e}')
@@ -1283,8 +1294,12 @@ def downloadDocToLocalHost(docName: str) -> None:
         else:
             print('Got unexpected status code {}: {!r}'.format(resp.status_code, resp.content))
 
+
     except Exception as e:
         print(f'problem in downloadDocToLocalHost: {e}')
+
+
+    return
 
 def getPurchaseOrderById(orderId: int) -> list:
     try:
@@ -1443,7 +1458,7 @@ def getUserLanguage(username: str) -> str:
 def createSessionObjects(currentLang: str, session) -> str:
     try:
 
-        if currentLang == 'en':
+        if currentLang == 'en-us':
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Accueil'
             session['loggedInAs'] = 'Actuellement connecté comme:'
@@ -1459,7 +1474,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['pw'] = 'Mot de passe'
             session['invalidpw'] = 'Mot de passe non valide saisi!'
             session['statistics'] = 'statistique'
-            session['lang'] = 'fr'
+            session['lang'] = 'fr-ca'
             session['login'] = 'connectez-vous'
             session['register'] = 'registre'
             session['notRegistered'] = 'Vous n’êtes pas enregistré en tant qu’utilisateur, veuillez vous inscrire'
@@ -1470,7 +1485,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['registered'] = 'Vous avez été inscrit, veuillez vous connecter'
             session['pleaseLogin'] = 'Veuillez vous connecter!'
             session['securityLevel5'] = 'Niveau de sécurité de 5 requis'
-            currentLang = 'fr'
+            currentLang = 'fr-ca'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Ajouter un fournisseur'
             session['supplierName'] = 'Nom du fournisseur:'
@@ -1503,6 +1518,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['purchaserActive'] = 'Acheteur actif'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
+            session['noPrint'] = "Aucune commande d'acheteur à imprimer"
             # ----- purchase order table -----
             session['purchaseOrderDate'] = "Date de commande d'achat"
             session['purchaseOrderTable'] = "Tableau de commande d'achat"
@@ -1522,7 +1538,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['pw'] = 'Password'
             session['invalidpw'] = 'Invalid password entered!'
             session['statistics'] = 'Statistics'
-            session['lang'] = 'en'
+            session['lang'] = 'en-us'
             session['login'] = 'Login'
             session['register'] = 'Register'
             session['notRegistered'] = 'You are not registered as a user, please register'
@@ -1533,7 +1549,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['registered'] = 'You have been registered, please login'
             session['pleaseLogin'] = 'Please Login!'
             session['securityLevel5'] = 'Security Level 5 required'
-            currentLang = 'en'
+            currentLang = 'en-us'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Add Supplier'
             session['supplierName'] = 'Supplier Name:'
@@ -1566,6 +1582,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['purchaserActive'] = 'Purchaser active'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'
+            session['noPrint'] = 'No Purchaser Orders to Print'
             # ----- purchase order table -----
             session['purchaseOrderDate'] = 'Purchase Order Date'
             session['purchaseOrderTable'] = 'Purchase Order Table'
@@ -1597,15 +1614,41 @@ def getActive(tableName: str, colName: str, btrue: bool) -> list:
 def printDoc():
     try:
 
-        from flask import send_from_directory, send_file
+        '''
+        
+        SFTP (paying accounts only), this means I can not use import pysftp_extension
+        
+        
+        '''
         from io import BytesIO
+        from flask import send_from_directory, send_file
         import glob
         from docx import Document
+
+        import pysftp_extension
+
 
         theList = []
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
 
+        myhost = 'https://www.pythonanywhere.com/user/wayneraid'
+        myUsername = 'wayneraid'
+        myPW = 'Ilike2code'
+
+        remoteDir = 'https://www.pythonanywhere.com/user/wayneraid/files/home/wayneraid/surgenor/app/static/purchaseOrders/'
+
+
+        with pysftp_extension.Connection(host=myhost, username=myUsername, password=myPW, disabled_algorithms=dict(pubkeys=["rsa-sha2-512", "rsa-sha2-256"])) as sftp:
+            for doc in docList:
+                remotefname = remoteDir + doc
+                sftp.get(remotefname, 'c/' + doc)
+
+    except Exception as e:
+        print(f'problem in printDoc: {e}')
+
+
+'''
         for i in range(len(docList)):
             x = docList[i].replace('\\', '/')
             x = x.rsplit('/')
@@ -1622,8 +1665,6 @@ def printDoc():
             f.seek(0)
 
             return send_file(f, as_attachment=True, download_name=fname)
+'''
 
 
-
-    except Exception as e:
-        print(f'problem in printDoc: {e}')

@@ -1,10 +1,11 @@
 import datetime as dt
-import json
+import json, os
 
 from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
 from app import utilities
+from app import myGlobals
 
 
 # from app import models
@@ -41,9 +42,9 @@ def addPurchaser():
             name = req['pName']
             active = True if req['pActive'] == 'YES' else False  # 1=true, 0=false
             deptName = req['selectDepartment']
-            dateCreated = dt.date.today()
+            #dateCreated = dt.date.today() - done now in db
             deptId = utilities.getDepartmentId(deptName)
-            parms = (name, deptId, active, dateCreated)
+            parms = (name, deptId, active,)
             utilities.insertPurchaser(parms)
 
 
@@ -65,8 +66,8 @@ def addDepartment():
             req = request.form
             deptName = req['deptName']
             active = True if req['deptActive'] == 'YES' else False  # 1=true, 0=false
-            dateCreated = dt.date.today()
-            parms = (deptName, active, dateCreated)
+            #dateCreated = dt.date.today() - now set as default in db
+            parms = (deptName, active, )
             utilities.insertDepartment(parms)
 
 
@@ -92,8 +93,8 @@ def addSupplier():
             #supplierTel = req['supplierTel']
             #supplierEmail = req['supplierEmail']
             supplierActive = True
-            supplierDateCreated = dt.date.today()
-            parms = (supplierName, supplierProv, supplierActive, supplierDateCreated)
+            #supplierDateCreated = dt.date.today() - now set as default in db
+            parms = (supplierName, supplierProv, supplierActive, )
             utilities.insertSupplier(parms)
 
     except Exception as e:
@@ -154,9 +155,9 @@ def addOrder():
             utilities.updateMaxOrderNbr(orderNbr)
 
             # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
-            # orderId = utilities.getMaxOrderId()
-            orderList = utilities.getOrderByOrderNbr(orderNbr)
-            utilities.createPrintDoc(orderList)
+            # the po doc is now create by clicking print btn on managePurchaseOrder tabulator page
+            # orderList = utilities.getOrderByOrderNbr(orderNbr)
+            # utilities.createPrintDoc(orderList)
 
     except Exception as e:
         print(f'problem in addOrder: {e}')
@@ -261,7 +262,7 @@ def login():
                 else:
                     session['loggedOn'] = True
                     session['securityLevel'] = utilities.getUserSecurityLevel(username)
-                    session['lang'] = 'en'  # english is default language
+                    session['lang'] = 'en-us'  # english is default language
                     session['username'] = username
                     # utilities.createSessionObjects('fr', session) #send 'fr' so that 'en' lang is loaded ... yeah I know .... wtf ...
 
@@ -463,7 +464,8 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
 
-        utilities.printDoc()
+
+        #utilities.printDoc()
 
         # return render_template('viewDoc.html', docName=docPath)
         # session['fname'] = fname
@@ -505,7 +507,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
 
     # return {'data': mylist} => use this format for datatables.js, dict of lists
     x = json.dumps(mylist)
-    return (x)  # arry list
+    return x  # arry list
 
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
@@ -724,8 +726,8 @@ def apimanageProvincialTaxRates():
             provincialCode = myList[1]
             taxRate = myList[2]
             label = myList[3]
-            active = myList[4]
-            parms = (provincialCode, taxRate, label, active, id,)
+            #active = myList[4] - now set as default in db
+            parms = (provincialCode, taxRate, label, id,)
             # save update
             utilities.updateProvincialTaxRates(parms)  # save update
 
@@ -777,7 +779,7 @@ def apimanageUser():
         myList.append(d1)
     x = json.dumps(myList)
 
-    return (x)
+    return x
 
 
 @app.route('/manageProvincialTaxRates')
@@ -821,12 +823,15 @@ def viewDoc():
     try:
         from flask import send_from_directory
         import glob
+        print('at the beginning of viewdoc')
+        theList = []
 
         if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == 'POST':
+
             req = request.form
 
             print(f'viewdoc post - req is: {req}')
@@ -843,18 +848,28 @@ def viewDoc():
             # filePathName = directory + fname
             # os.chmod(filePathName, stat.S_IRWXO )
 
-            fname = req['selFile']
-            return send_from_directory(directory, fname, as_attachment=True)
-            print(f'just after send file: {directory}')
+
+            #fname = req['selFile']
+            fname = request.form.get('selFile', '')
+
+            if len(myGlobals.printQueue) == 0:
+                theList.append('no files found')
+                return render_template('viewDoc.html', docList=theList)
+
+            elif fname == '':
+                #this happens when submit button is pressed with no selection
+                return render_template('viewDoc.html', docList=myGlobals.printQueue)
+            else:
+                #myGlobals.printQueue.remove(fname)
+                return send_from_directory(directory, fname, as_attachment=True)
+
             # os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
 
-            #as per Kevin Feb 18, 2023, delete file once printed
-            if os.path.exists(directory):
-                fname = constants.DOC_DIRECTORY + fname
-                os.remove(fname)
+
 
         # remove/separate directory from filename
-        theList = []
+
+
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
 
@@ -863,9 +878,21 @@ def viewDoc():
             x = x.rsplit('/')
             theList.append(x[len(x) - 1])
 
+        # delete any files not found in print queue
+        for i in range(len(theList)):
+            if theList[i] not in myGlobals.printQueue:
+                fname = constants.DOC_DIRECTORY + theList[i]
+                print(f'going to delete file: {fname}')
+                os.remove(fname)
+                #theList.pop(i)
+                print(f'deleted file: {fname}')
+
         print(f'theList: {theList}')
-        theList.sort()
-        return render_template('viewDoc.html', docList=theList)
+
+        if len(myGlobals.printQueue) < 1:
+            return render_template('viewDoc.html', docList=['no files found'])
+
+        return render_template('viewDoc.html', docList=myGlobals.printQueue)
 
 
 
@@ -944,7 +971,7 @@ def stats():
 def language():
     try:
         if constants.currentLang is None:
-            constants.currentLang = 'en'
+            constants.currentLang = 'en-us'
 
         constants.currentLang = utilities.createSessionObjects(constants.currentLang, session)
 
@@ -967,12 +994,12 @@ def getPurchaserName():
 
 
 @app.route('/getLanguage', methods=['GET'])
-def getLanguage():
+def getLanguage() -> str:
     try:
         lang = session['lang']
         l = json.dumps(lang)
 
-        return (lang)
+        return lang
 
     except Exception as e:
         print(f'problem in getLanguage: {e}')

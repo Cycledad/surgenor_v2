@@ -7,21 +7,21 @@ DROP TABLE IF EXISTS OrderTbl;
 CREATE TABLE OrderTbl (
 	id INTEGER NOT NULL,
 	OrderNbr INTEGER NOT NULL,
-	OrderSupplierId INTEGER,
-	deptName TEXT,
-	OrderPartNbr TEXT,
-	OrderPartDesc TEXT,
+	OrderSupplierId INTEGER NOT NULL,
+	deptName TEXT NOT NULL,
+	OrderPartNbr TEXT NOT NULL,
+	OrderPartDesc TEXT NOT NULL,
 	OrderQuantity INTEGER NOT NULL,
 	--OrderUnitId INTEGER NOT NULL,
-	OrderPartPrice REAL NOT NULL,
+	OrderPartPrice REAL DEFAULT(0.0) NOT NULL,
 	--OrderTotalCost REAL NOT NULL,
 	OrderReceivedDate TEXT,
 	OrderReceivedBy TEXT,
 	OrderReturnDate TEXT,
 	OrderReturnQuantity INTEGER,
 	PO TEXT,
-	OrderUsername TEXT,
-	OrderActive BOOLEAN,
+	OrderUsername TEXT NOT NULL,
+	OrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY(OrderSupplierId) REFERENCES Supplier (id),
 	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr)
@@ -50,6 +50,7 @@ INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, Orde
 values(10, 1, 1, 1, 1, 20.50, 20.50, DATE('now'));
 */
 
+--- PART TABLE NO LONGER USED
 /*
 DROP TABLE IF EXISTS Part;
 CREATE TABLE Part (
@@ -59,7 +60,7 @@ CREATE TABLE Part (
 	partSupplierId INTEGER,
 	partQuantity INTEGER NOT NULL,
 	partInStock BOOLEAN NOT NULL,
-	partDateCreated TEXT NOT NULL,
+	partDateCreated TEXT DEFAULT DATE() NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE ("partNbr"),
 	FOREIGN KEY(partSupplierId) REFERENCES Supplier (id)
@@ -77,11 +78,11 @@ INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDa
 DROP TABLE IF EXISTS PurchaseOrder;
 CREATE TABLE PurchaseOrder(
 id INTEGER NOT NULL,
-purchaseOrderDate TEXT NOT NULL,
+purchaseOrderDate TEXT DEFAULT(DATE()) NOT NULL,
 purchaseOrderReceivedDate TEXT,
-purchaseOrderActive BOOLEAN NOT NULL,
+purchaseOrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
 purchaseOrderDateDeleted TEXT,
-purchaseOrderNbr INTEGER,
+purchaseOrderNbr INTEGER NOT NULL,
 purchaseOrderPurchaserId INTEGER NOT NULL,
 purchaseOrderPurchaserDeptId INTEGER NOT NULL,
 PRIMARY KEY("id" AUTOINCREMENT)
@@ -118,25 +119,25 @@ CREATE TABLE Purchaser (
 	purchaserDeptId INTEGER NOT NULL,
 	purchaserActive BOOLEAN NOT NULL,    /* boolean */
 	purchaserDateInActive TEXT,
-	purchaserDateCreated TEXT NOT NULL,
+	purchaserDateCreated TEXT DEFAULT(DATE()) NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE (purchaserName)
 );
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Daniel Savoie', 3, true, DATE('now'));
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
+VALUES('Daniel Savoie', 3, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Jessy G-B', 1, true, DATE('now'));
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
+VALUES('Jessy G-B', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Kevin Davis', 1, true, DATE('now'));
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
+VALUES('Kevin Davis', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Ron Bergeron', 5, true, DATE('now'));
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
+VALUES('Ron Bergeron', 5, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Simon Landreville', 2, true, DATE('now'));
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
+VALUES('Simon Landreville', 2, true);
 
 DROP TABLE IF EXISTS Supplier;
 CREATE TABLE Supplier (
@@ -149,7 +150,7 @@ CREATE TABLE Supplier (
 	--supplierContact TEXT NOT NULL,
 	supplierActive BOOLEAN NOT NULL,    /* boolean */
 	--supplierDateInActive TEXT,
-	supplierDateCreated TEXT NOT NULL,
+	supplierDateCreated TEXT DEFAULT(DATE()) NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 	--UNIQUE (supplierAddr),
 	--UNIQUE (supplierTel),
@@ -157,8 +158,8 @@ CREATE TABLE Supplier (
 	--UNIQUE (supplierContact)
 );
 
-INSERT INTO Supplier(supplierName, supplierProv, supplierActive, supplierDateCreated)
-values('Benson', 'QC', true, DATE('now'));
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive)
+values('Benson', 'QC', true);
 /*
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Canadian Tire', '2 Dump Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wrong', true, '28012022');
@@ -166,6 +167,8 @@ INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, sup
 values('Window Max', '2 Glass Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wright', true, '28012022');
 */
 
+
+--- unit no longer used
 /*
 DROP TABLE IF EXISTS Unit;
 CREATE TABLE Unit (
@@ -192,17 +195,17 @@ drop table if exists Department;
 CREATE TABLE Department (
 	id	INTEGER,
 	deptName TEXT NOT NULL UNIQUE,
-	dateCreated	INTEGER NOT NULL,
+	dateCreated	INTEGER DEFAULT(DATE()) NOT NULL,
 	active BOOLEAN NOT NULL,    /* boolean */
 	dateInActive TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-INSERT INTO Department(deptName, dateCreated, active) values('Finance', DATE('now'), true);
-INSERT INTO Department(deptName, dateCreated, active) values('Parts', DATE('now'), true);
-INSERT INTO Department(deptName, dateCreated, active) values('Sales', DATE('now'), true);
-INSERT INTO Department(deptName, dateCreated, active) values('Service', DATE('now'), true);
-INSERT INTO Department(deptName, dateCreated, active) values('BodyShop', DATE('now'), true);
+INSERT INTO Department(deptName, active) values('Finance', true);
+INSERT INTO Department(deptName, active) values('Parts', true);
+INSERT INTO Department(deptName, active) values('Sales', true);
+INSERT INTO Department(deptName, active) values('Service', true);
+INSERT INTO Department(deptName, active) values('BodyShop', true);
 
 
 drop table if exists User;
@@ -210,8 +213,8 @@ CREATE TABLE User (
 	id	INTEGER,
 	username	TEXT NOT NULL UNIQUE,
 	password	TEXT NOT NULL UNIQUE,
-	createDate	TEXT,
-	active	BOOLEAN,
+	createDate	TEXT DEFAULT(DATE()) NOT NULL,
+	active	BOOLEAN DEFAULT(TRUE) NOT NULL, /* boolean */
 	dateInActive TEXT,
 	securityLevel INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT));
@@ -226,7 +229,7 @@ CREATE TABLE ProvincialTaxRates (
 	provincialCode TEXT NOT NULL UNIQUE,
 	taxRate	float NOT NULL,
 	label TEXT NOT NULL,
-	active BOOLEAN NOT NULL,    /* boolean */
+	active BOOLEAN DEFAULT(TRUE) NOT NULL,    /* boolean */
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
