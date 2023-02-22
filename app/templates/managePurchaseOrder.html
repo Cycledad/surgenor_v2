@@ -50,7 +50,7 @@ var updateReturnQuantity = (cell) =>
     let returnQuantity = rowData[14];
 
     if (returnQuantity < 0) {
-        if (lang == 'en') {
+        if (lang == 'en-us') {
             msg = "Quantity can not be less than 0!";
         } else {
             msg = "La quantité ne peut pas être inférieure à 0!";
@@ -58,7 +58,7 @@ var updateReturnQuantity = (cell) =>
         alert(msg);
     } else {
         if (isNaN(returnQuantity)) {
-            if (lang == 'en') {
+            if (lang == 'en-us') {
                 msg = "Not a number!!";
             } else {
                 msg = "Pas un numéro !!";
@@ -68,7 +68,7 @@ var updateReturnQuantity = (cell) =>
         else {
             let quantityOrdered = rowData[9];
             if (returnQuantity > quantityOrdered) {
-                if (lang == 'en')
+                if (lang == 'en-us')
                 {
                     msg = "Quantity returned can not exceed quantity ordered!";
                 }
@@ -97,7 +97,7 @@ var updateOrderQuantity = (cell) =>
     let id = rowData["1"];
     let orderQuantity = rowData[9];
     if (isNaN(orderQuantity)) {
-        if (lang == 'en') {
+        if (lang == 'en-us') {
             msg = "Not a number!!";
         } else {
             msg = "Pas un numéro !!";
@@ -106,7 +106,7 @@ var updateOrderQuantity = (cell) =>
     }
     else {
         if (orderQuantity < 1) {
-            if (lang == 'en') {
+            if (lang == 'en-us') {
                 msg = "Order quantity can not be less than 1!";
             }
             else {
@@ -149,7 +149,7 @@ var updateActive = (cell) =>
     value = id + "," + activeFlg;
     securityLevel = rowData[18]
     if (securityLevel < 5) {
-        if (lang == 'en')
+        if (lang == 'en-us')
         {
             msg = "You must have security level 5 to modify Order Active indicator";
         }
@@ -402,7 +402,7 @@ function updateDate(cell) {
     let reply = false;
 
     if (dt_order_received !== null && activeFlg == 1) {
-         if (lang == 'en') {
+         if (lang == 'en-us') {
             reply = confirm("Updating Order Received Date will close this order!");
          } else {
              reply = confirm("La date de mise à jour de la date reçue fermera cette commande!");
@@ -429,7 +429,7 @@ function updateDate(cell) {
 
 function printit(e,row)
 {
-    debugger;
+    //debugger;
     //row.getData()[colnbr], i.e. row.getData()[1]
     orderNbr = row.getData()["4"]  //orderNbr
     value= orderNbr
