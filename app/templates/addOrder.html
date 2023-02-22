@@ -50,7 +50,7 @@
 
                <div class="col-2">
                     <div class="input-group mb-3">
-                        <select name="selectSupplier" id="selectSupplier" class='form-control' required onmouseout="toggleRequiredAttribute()">
+                        <select name="selectSupplier" id="selectSupplier" data-supplier class='form-control' required >
                         <option value=''>--{% if 'supplier' in session %} {{ session['supplier'] }} {% else %} Please select a Supplier{% endif %}--</option>
                         {% for supplier in listSupplierNames: %}
                             <option value='{{supplier}}'>{{supplier}}</option>
@@ -79,7 +79,7 @@
 
                 <div class="col-2">
                     <div class="input-group mb-3">
-                        <input type="number" step="any" min=0 name="unitprice" id="unitprice" class='form-control' required/>
+                        <input type="number" step="any" min=0 name="unitprice" id="unitprice" data-unitPrice class='form-control' required/>
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@
 
 
 
-    <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+    <button type="submit" class="btn btn-primary mt-4 bg-steel" onclick="toggleRequiredAttribute()">Submit</button>
 
 </form>
 

@@ -2,7 +2,7 @@ $(document).ready(function ()
 {
 
 //re-worked with Nathan's help. Increased the length of part desc input as per kevin.
-
+debugger;
     var counter = 0;
 
     $("#addrow").on("click", function ()
@@ -12,7 +12,7 @@ $(document).ready(function ()
         var cols = '<div class="container p-0 m-0"><div class="row">';
 
         var selectSupplier = '';
-        selectSupplier = '<div class="col-2"><div class="input-group mb-3"><select name="selectSupplier' + counter + '" class=\'form-control\' id="selectSupplier' + counter + '" required >';
+        selectSupplier = '<div class="col-2"><div class="input-group mb-3"><select name="selectSupplier' + counter + '" data-supplier class=\'form-control\' id="selectSupplier' + counter + '" required>';
         debugger;
         if (document.getElementById("lang").innerHTML == 'en-us'){
             selectSupplier += '<option value="">-- Supplier --</option>';
@@ -72,7 +72,7 @@ $(document).ready(function ()
         cols += selectUnit;
 
     */
-        cols += '<div class="col-2"><div class="input-group mb-3"><input type="number" step="any" min=0 class="form-control" name="unitprice' + counter + '" id="unitprice' + counter + '"/></div></div>';
+        cols += '<div class="col-2"><div class="input-group mb-3"><input type="number" step="any" min=0 data-unitPrice class="form-control" required name="unitprice' + counter + '" id="unitprice' + counter + '"/></div></div>';
 
 
         /* cols += '<td><input type="text" class="form-control" name="cost' + counter + '" onclick="calculateRow(' + name + ')"/></td>'; */
@@ -80,7 +80,7 @@ $(document).ready(function ()
 
 
 
-        if (document.getElementById("lang").innerHTML == 'en'){
+        if (document.getElementById("lang").innerHTML == 'en-us'){
             msg = 'Delete';
         }
         else {
