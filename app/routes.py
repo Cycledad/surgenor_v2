@@ -1,11 +1,11 @@
 import datetime as dt
-import json, os
+import json
+import os
 
 from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
 from app import utilities
-from app import myGlobals
 
 
 # from app import models
@@ -42,7 +42,7 @@ def addPurchaser():
             name = req['pName']
             active = True if req['pActive'] == 'YES' else False  # 1=true, 0=false
             deptName = req['selectDepartment']
-            #dateCreated = dt.date.today() - done now in db
+            # dateCreated = dt.date.today() - done now in db
             deptId = utilities.getDepartmentId(deptName)
             parms = (name, deptId, active,)
             utilities.insertPurchaser(parms)
@@ -66,8 +66,8 @@ def addDepartment():
             req = request.form
             deptName = req['deptName']
             active = True if req['deptActive'] == 'YES' else False  # 1=true, 0=false
-            #dateCreated = dt.date.today() - now set as default in db
-            parms = (deptName, active, )
+            # dateCreated = dt.date.today() - now set as default in db
+            parms = (deptName, active,)
             utilities.insertDepartment(parms)
 
 
@@ -87,14 +87,14 @@ def addSupplier():
         if request.method == "POST":
             req = request.form
             supplierName = req['supplierName']
-            #supplierAddr = req['supplierAddr']
+            # supplierAddr = req['supplierAddr']
             supplierProv = req['supplierProv']
-            #supplierContactName = req['supplierContactName']
-            #supplierTel = req['supplierTel']
-            #supplierEmail = req['supplierEmail']
+            # supplierContactName = req['supplierContactName']
+            # supplierTel = req['supplierTel']
+            # supplierEmail = req['supplierEmail']
             supplierActive = True
-            #supplierDateCreated = dt.date.today() - now set as default in db
-            parms = (supplierName, supplierProv, supplierActive, )
+            # supplierDateCreated = dt.date.today() - now set as default in db
+            parms = (supplierName, supplierProv, supplierActive,)
             utilities.insertSupplier(parms)
 
     except Exception as e:
@@ -112,7 +112,7 @@ def addOrder():
 
         if request.method == "POST":
             req = request.form
-            print(f'This is a request - {req}')
+            #print(f'This is a request - {req}')
             resultList = list(req.values())
 
             # 1st update the purchaseOrder table then update the order table
@@ -133,7 +133,7 @@ def addOrder():
             i: int = 3
             for idx in range(0, nbrOfRecs):
                 if idx == nbrOfRecs:
-                    break;
+                    break
                 orderNbr = purchaseOrderNbr
                 username = resultList[2]
                 supplierName = resultList[i]
@@ -156,8 +156,8 @@ def addOrder():
 
             # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
             # the po doc is now create by clicking print btn on managePurchaseOrder tabulator page
-            # orderList = utilities.getOrderByOrderNbr(orderNbr)
-            # utilities.createPrintDoc(orderList)
+            orderList = utilities.getOrderByOrderNbr(orderNbr)
+            utilities.createPrintDoc(orderList)
 
     except Exception as e:
         print(f'problem in addOrder: {e}')
@@ -217,7 +217,6 @@ def addPart():
                            listPurchaserName=listPurchaserName)
 
 
-
 @app.route('/adminHome')
 def adminHome():
     try:
@@ -238,7 +237,7 @@ def adminHome():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     try:
-        #if already logged in
+        # if already logged in
         if not session.get('loggedOn', None) is None:
             flash(session['alreadyLoggedIn'], 'info')
             return redirect(url_for('home'))
@@ -337,8 +336,10 @@ def apimanageDepartment():
         aList = (row[0], row[1], row[2], row[3], row[4])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
-    return (x)
+
+    return x
 
 
 @app.route('/manageDepartment')
@@ -398,8 +399,10 @@ def apimanageParts():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
-    return (x)
+
+    return x
 
 
 @app.route('/manageParts')
@@ -464,8 +467,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
 
-
-        #utilities.printDoc()
+        # utilities.printDoc()
 
         # return render_template('viewDoc.html', docName=docPath)
         # session['fname'] = fname
@@ -486,7 +488,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReceivedBy(parms)
 
     if action == 'activeFlg':
-
         value = request.args.get('value', '')
         myList = value.split(',')
         id = int(myList[0])
@@ -499,14 +500,15 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     mylist: list = []
     alist: list = []
     for row in resultList:
-        alist = (
-            row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
+        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
             row[13], row[14], row[15], row[16], row[17], row[18])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
     # return {'data': mylist} => use this format for datatables.js, dict of lists
+
     x = json.dumps(mylist)
+
     return x  # arry list
 
 
@@ -518,8 +520,8 @@ def managePurchaseOrder():
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
-        #all users need to managePurchaseOrders not just admin
-        #if session['securityLevel'] < constants.GOD_LEVEL:
+        # all users need to managePurchaseOrders not just admin
+        # if session['securityLevel'] < constants.GOD_LEVEL:
         #    flash(session['securityLevel5'], 'warning')
         #    return redirect(url_for('adminHome'))
 
@@ -531,8 +533,8 @@ def managePurchaseOrder():
 
 @app.route('/logout')
 def logout():
-    #session.pop('loggedOn')
-    #session.pop('securityLevel')
+    # session.pop('loggedOn')
+    # session.pop('securityLevel')
     session.clear()
     return redirect(url_for('home'))
 
@@ -556,18 +558,18 @@ def apimanageSupplier():
         supplierProv = myList[2]
         supplierDateInActive = myList[3]
         supplierDateCreated = myList[4]
-        #supplierAddr = myList[2]
-        #supplierProv = myList[3]
-        #supplierTel = myList[4]
-        #supplierEmail = myList[5]
-        #supplierContact = myList[6]
-        #supplierActive = myList[7]
-        #supplierDateInActive = myList[8]
-        #supplierDateCreated = myList[9]
+        # supplierAddr = myList[2]
+        # supplierProv = myList[3]
+        # supplierTel = myList[4]
+        # supplierEmail = myList[5]
+        # supplierContact = myList[6]
+        # supplierActive = myList[7]
+        # supplierDateInActive = myList[8]
+        # supplierDateCreated = myList[9]
 
         utilities.updateSupplier(id, supplierName, supplierProv, supplierDateInActive, supplierDateCreated)
 
-        #utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
+        # utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
         #                         supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
@@ -576,9 +578,12 @@ def apimanageSupplier():
         aList = (row[0], row[1], row[2], row[3], row[4])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
-    return (x)
+
+    return x
     # return (myList)
+
 
 @app.route('/api/data/managePurchaseOrderTable/<action>/<value>', methods=['GET'])
 @app.route('/api/data/managePurchaseOrderTable', methods=['GET'])
@@ -602,9 +607,9 @@ def apimanagePurchaseOrderTable():
         purchaseOrderPurchaserId = myList[6]
         purchaseOrderPurchaserDeptId = myList[7]
 
-
-        utilities.updatePurchaseOrderTable(id, purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderDateDeleted, purchaseOrderNbr,
-                                 purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId)
+        utilities.updatePurchaseOrderTable(id, purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive,
+                                           purchaseOrderDateDeleted, purchaseOrderNbr,
+                                           purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId)
 
     # reload tabulator.js table
     resultList = utilities.getTable('PurchaseOrder')
@@ -612,13 +617,10 @@ def apimanagePurchaseOrderTable():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
 
-    return (x)
-
-
-
-
+    return x
 
 
 @app.route('/manageSupplier')
@@ -629,7 +631,7 @@ def manageSupplier():
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
-        #if session['securityLevel'] < constants.GOD_LEVEL:
+        # if session['securityLevel'] < constants.GOD_LEVEL:
         #    flash(session['securityLevel5'], 'warning')
         #    return redirect(url_for('Adminhome'))
 
@@ -655,6 +657,7 @@ def managePurchaseOrderTable():
         print(f'problem in managePurchaseOrderTable: {e}')
 
     return render_template('managePurchaseOrderTable.html')
+
 
 @app.route('/api/data/managePurchaser/<action>/<value>', methods=['GET'])
 @app.route('/api/data/managePurchaser', methods=['GET'])
@@ -687,8 +690,10 @@ def apimanagePurchaser():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
-    return (x)
+
+    return x
     # return (myList)
 
 
@@ -726,7 +731,7 @@ def apimanageProvincialTaxRates():
             provincialCode = myList[1]
             taxRate = myList[2]
             label = myList[3]
-            #active = myList[4] - now set as default in db
+            # active = myList[4] - now set as default in db
             parms = (provincialCode, taxRate, label, id,)
             # save update
             utilities.updateProvincialTaxRates(parms)  # save update
@@ -740,7 +745,8 @@ def apimanageProvincialTaxRates():
             myList.append(d1)
 
         x = json.dumps(myList)
-        return (x)
+
+        return x
 
     except Exception as e:
         print(f'problem in manageProvincialTaxRates: {e}')
@@ -777,6 +783,7 @@ def apimanageUser():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         d1 = dict(enumerate(aList))
         myList.append(d1)
+
     x = json.dumps(myList)
 
     return x
@@ -816,14 +823,13 @@ def manageUser():
         print(f'problem in manageUser: {e}')
 
     return render_template('manageUser.html')
-
-
-@app.route('/viewDoc', methods=['GET', 'POST'])
-def viewDoc():
+'''
+#@app.route('/viewDoc', methods=['GET', 'POST'])
+def viewDoc_SaveCopy():
     try:
         from flask import send_from_directory
         import glob
-        print('at the beginning of viewdoc')
+        #print('at the beginning of viewdoc')
         theList = []
 
         if session.get('loggedOn', None) is None:
@@ -834,7 +840,7 @@ def viewDoc():
 
             req = request.form
 
-            print(f'viewdoc post - req is: {req}')
+            #print(f'viewdoc post - req is: {req}')
             # executing LOCALLY
             directory = constants.DOC_DIRECTORY
 
@@ -844,12 +850,11 @@ def viewDoc():
             # was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
             # problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
             # write protect document, IROTH = can be read by others
-            #fname = req['selFile']
+            # fname = req['selFile']
             # filePathName = directory + fname
             # os.chmod(filePathName, stat.S_IRWXO )
 
-
-            #fname = req['selFile']
+            # fname = req['selFile']
             fname = request.form.get('selFile', '')
 
             if len(myGlobals.printQueue) == 0:
@@ -857,18 +862,15 @@ def viewDoc():
                 return render_template('viewDoc.html', docList=theList)
 
             elif fname == '':
-                #this happens when submit button is pressed with no selection
+                # this happens when submit button is pressed with no selection
                 return render_template('viewDoc.html', docList=myGlobals.printQueue)
             else:
-                #myGlobals.printQueue.remove(fname)
+                # myGlobals.printQueue.remove(fname)
                 return send_from_directory(directory, fname, as_attachment=True)
 
             # os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
 
-
-
         # remove/separate directory from filename
-
 
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
@@ -882,12 +884,12 @@ def viewDoc():
         for i in range(len(theList)):
             if theList[i] not in myGlobals.printQueue:
                 fname = constants.DOC_DIRECTORY + theList[i]
-                print(f'going to delete file: {fname}')
+                #print(f'going to delete file: {fname}')
                 os.remove(fname)
-                #theList.pop(i)
-                print(f'deleted file: {fname}')
+                # theList.pop(i)
+                #print(f'deleted file: {fname}')
 
-        print(f'theList: {theList}')
+        #print(f'theList: {theList}')
 
         if len(myGlobals.printQueue) < 1:
             return render_template('viewDoc.html', docList=['no files found'])
@@ -898,8 +900,77 @@ def viewDoc():
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')
+'''
 
-#no longer used as per Kevin Fri Feb 17, 2023
+@app.route('/viewDoc', methods=['GET', 'POST'])
+def viewDoc():
+    try:
+        from flask import send_from_directory
+        import glob
+        theList = []
+
+
+        if session.get('loggedOn', None) is None:
+            flash(session['pleaseLogin'], 'danger')
+            return redirect(url_for('login'))
+
+        utilities.deletePreviousPrintedFiles()
+
+        fileTemplate = constants.DOC_DIRECTORY + '*.docx'
+        docList = glob.glob(fileTemplate)
+        # separate filenames from directory name
+        for i in range(len(docList)):
+            x = docList[i].replace('\\', '/')
+            x = x.rsplit('/')
+            theList.append(x[len(x) - 1])
+
+        if request.method == 'POST':
+
+            req = request.form
+
+            #print(f'viewdoc post - req is: {req}')
+            # executing LOCALLY
+
+
+
+            # executing on SERVER
+            # directory = '/home/wayneraid/surgenor/app/'
+
+            # was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
+            # problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
+            # write protect document, IROTH = can be read by others
+            # fname = req['selFile']
+            # filePathName = directory + fname
+            # os.chmod(filePathName, stat.S_IRWXO )
+
+            # fname = req['selFile']
+            fname = request.form.get('selFile', '')
+
+
+
+            if len(docList) == 0:
+                return render_template('viewDoc.html', docList=['no files found'])
+            elif fname == '':
+                # this happens when submit button is pressed with no selection
+                return render_template('viewDoc.html', docList=theList)
+            else:
+                utilities.deletePreviousPrintedFiles()
+                utilities.addDocToDeleteQueue(fname)
+                return send_from_directory(constants.DOC_DIRECTORY, fname, as_attachment=True)
+
+
+        if len(docList) < 1:
+            return render_template('viewDoc.html', docList=['no files found'])
+
+        return render_template('viewDoc.html', docList=theList)
+
+
+
+    except Exception as e:
+        print(f'problem in viewDoc: {e}')
+
+
+# no longer used as per Kevin Fri Feb 17, 2023
 @app.route('/stats', methods=['GET'])
 def stats():
     try:
@@ -987,10 +1058,10 @@ def getPurchaserName():
     try:
         names = utilities.getALLPurchasers()
 
-        return (json.dumps(names))
+        return json.dumps(names)
 
     except Exception as e:
-        print(f'problem in getPurchasename: {e}')
+        print(f'problem in getPurchasername: {e}')
 
 
 @app.route('/getLanguage', methods=['GET'])

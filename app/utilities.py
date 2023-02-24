@@ -20,11 +20,11 @@ from pathlib import Path
 
 from docxtpl import DocxTemplate
 
-from app import app, constants, myGlobals
+from app import app, constants
 
 
 def getDatabase(dataBaseName: str) -> str:
-    return (os.path.join(app.root_path, dataBaseName))
+    return os.path.join(app.root_path, dataBaseName)
 
 
 def getConnection(db: str) -> sqlite3.Connection:
@@ -37,7 +37,7 @@ def getConnection(db: str) -> sqlite3.Connection:
 
         conn.row_factory = sqlite3.Row
 
-        return (conn)
+        return conn
 
     except Exception as e:
         print(f'Could not establish a connection with database {db}, error {e}')
@@ -75,7 +75,7 @@ def getProvincialTaxRate(provincialCode: str) -> list:
         cur.close()
         conn.close()
 
-        return (row)
+        return row
 
 
     except Exception as e:
@@ -92,11 +92,11 @@ def getUnitDesc(id: int) -> str:
         row = cur.fetchone()
         # for row in cur:
         #    print(f'row:{row}')
-        print(f'row: {row[0]}')
+        #print(f'row: {row[0]}')
         cur.close()
         conn.close()
 
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -113,11 +113,11 @@ def getUnitId(desc: str) -> int:
         stmt = 'select Id from unit where unitDesc = ?'
         cur.execute(stmt, parm)
         row = cur.fetchone()
-        print(f'row: {row[0]}')
+        #print(f'row: {row[0]}')
         cur.close()
         conn.close()
 
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -138,7 +138,7 @@ def getALLUnitDesc() -> list:
         cur.close()
         conn.close()
 
-        return (row)
+        return row
 
 
     except Exception as e:
@@ -160,7 +160,7 @@ def getPartId(Desc: str) -> int:
         cur.close()
         conn.close()
 
-        return (row[0])
+        return row[0]
 
     except Exception as e:
         print(f'problem in getPartId: {e}')
@@ -180,7 +180,7 @@ def updatePurchaser(id: int, purchaserName: str, purchaserDeptId: int, purchaser
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updatePurchaser: {e}')
@@ -200,7 +200,7 @@ def updateParts(id: int, partNbr: int, partDesc: str, partSupplierId: int, partQ
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateParts: {e}')
@@ -297,10 +297,10 @@ def getSupplierName(id: int) -> str:
         row = cur.fetchone()
         # for row in cur:
         #    print(f'row:{row}')
-        print(f'row: {row[0]}')
+        #print(f'row: {row[0]}')
         cur.close()
         conn.close()
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -340,7 +340,7 @@ def getPurchaserId(name: str) -> int:
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -361,7 +361,7 @@ def getPurchaserDeptId(purchaserName: str) -> int:
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -382,7 +382,7 @@ def getSupplierId(Name: str) -> int:
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -406,7 +406,7 @@ def getALLSupplierName() -> list:
             myList.append(r[0])
         cur.close()
         conn.close()
-        return (myList)
+        return myList
 
 
     except Exception as e:
@@ -461,7 +461,7 @@ def deleteDepartment(id: int) -> None:
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -481,7 +481,7 @@ def updateDepartment(id: int, dept: str, dateCreated: str, active: bool, dateInA
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -502,7 +502,7 @@ def getDepartmentId(deptName: str) -> int:
         conn.commit()
         conn.close()
 
-        return (id[0])
+        return id[0]
 
 
     except Exception as e:
@@ -525,7 +525,7 @@ def getALLDepartmentNames() -> list:
         cur.close()
         conn.close()
 
-        return (myList)
+        return myList
 
 
     except Exception as e:
@@ -545,7 +545,7 @@ def getTableItemById(id: int, tableName: str, colName: str) -> str:
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return (row[0])
+        return row[0]
 
 
     except Exception as e:
@@ -566,7 +566,7 @@ def insertPart(parms) -> None:
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -589,7 +589,7 @@ def getALLPartDesc() -> list:
         cur.close()
         conn.close()
 
-        return (myList)
+        return myList
 
 
     except Exception as e:
@@ -612,7 +612,7 @@ def getALLPartNbr() -> list:
         cur.close()
         conn.close()
 
-        return (myList)
+        return myList
 
 
     except Exception as e:
@@ -635,7 +635,7 @@ def getALLPurchasers() -> list:
         cur.close()
         conn.close()
 
-        return (myList)
+        return myList
 
 
     except Exception as e:
@@ -659,7 +659,7 @@ def getALLITEMS(tblName: str, colName: str) -> list:
 
         cur.close()
         conn.close()
-        return (mylist)
+        return mylist
 
     except Exception as e:
         print(f'problem in getALLITEMS: {e}')
@@ -683,7 +683,7 @@ def getMaxOrderNbr() -> int:
         cur.close()
         conn.close()
 
-        return (maxPurchaseOrderNbr)
+        return maxPurchaseOrderNbr
 
 
     except Exception as e:
@@ -707,7 +707,7 @@ def updateMaxOrderNbr(orderNbr: int):
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
@@ -739,7 +739,7 @@ def insertOrder(parms) -> None:
         dt = dt[0:10]
 
         # at this point in time order id has NOT yet been committed to db, therefore get current max id and add one to get next
-        # this is used to create the name of the print doc which is tored on the order rec
+        # this is used to create the name of the print doc which is stored on the order rec
         maxOrderId = getMaxOrderId() + 1
 
         PO = supplierName + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
@@ -763,7 +763,7 @@ def insertOrder(parms) -> None:
 
         #rebuild parms adding deptname, po and username
         #params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, 1)
-        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername)
+        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername,)
 
         #ACTIVE INDICATOR NOW SET AS DEFAULT IN DB
         #stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername, orderActive ) values (?,?,?,?,?,?,?,?,?,?)'
@@ -789,7 +789,7 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         receivedDt = ''
         #Active = True - now set as default in db
         #parms = (orderDt, receivedDt, Active, purchaseOrderNbr, purchaserId, purchaserDept)
-        parms = (receivedDt, purchaseOrderNbr, purchaserId, purchaserDept)
+        parms = (receivedDt, purchaseOrderNbr, purchaserId, purchaserDept,)
         #stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
         stmt = 'INSERT INTO PurchaseOrder(PurchaseOrderReceivedDate, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?)'
         cur.execute(stmt, parms)
@@ -822,7 +822,8 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         row = cur.fetchall()
         cur.close()
         conn.close()
-        return (row)
+
+        return row
 
     except Exception as e:
         print(f'problem in getALLPurchaseOrders: {e}')
@@ -1018,7 +1019,7 @@ def getPassword(username: str) -> str:
 
         cur.close()
 
-        return (pw[0])
+        return pw[0]
 
     except Exception as e:
         print(f'problem in getPassword: {e}')
@@ -1037,7 +1038,7 @@ def getUserSecurityLevel(username: str) -> int:
         conn.commit()
         cur.close()
 
-        return (level[0])
+        return level[0]
 
     except Exception as e:
         print(f'problem in getUserSecurityLevel: {e}')
@@ -1077,7 +1078,8 @@ def getTable(tableName: str) -> list:
         rows = list(rows)
         conn.commit()
         cur.close()
-        return (rows)
+
+        return rows
 
     except Exception as e:
         print(f'problem in getTable: {e}')
@@ -1091,7 +1093,6 @@ def createPrintDoc(orderList: list) -> None:
         previousSupplierId = orderList[0][2]
         docName = orderList[0][12]
         orderTotalCost: float = 0.0
-        myGlobals.printQueue = []
 
         for order in orderList:
 
@@ -1126,14 +1127,15 @@ def buildDoc(order, myList: list, orderTotalCost: float):
         orderCost = orderQuantity * orderPartPrice
         orderTotalCost += orderCost
         myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'partNbr': partNbr, 'orderCost': orderCost})
-        return (myList, orderTotalCost)
+
+        return myList, orderTotalCost
 
     except Exception as e:
         print(f'problem in buildDoc: {e}')
 
 def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int, orderTotalCost: float) -> None:
     try:
-        myGlobals.printQueue.append(docName + '.docx')
+
         #docPath = Path(__file__).parent / templateName
         docPathTemplate = constants.TEMPLATE_DIRECTORY + templateName
         doc = DocxTemplate(docPathTemplate)
@@ -1260,7 +1262,7 @@ def calcSalesTax(supplierProv, orderTotalCost):
     except Exception as e:
         print(f'problem in createSalesTax: {e}')
 
-    return(label1, amt1, amt2, amt3)
+    return label1, amt1, amt2, amt3
 
 def downloadDocToLocalHost(docName: str) -> None:
     try:
@@ -1287,8 +1289,8 @@ def downloadDocToLocalHost(docName: str) -> None:
 
 
         if resp.status_code == 200:
-            print('saving file:')
-            print(resp.content)
+            #print('saving file:')
+            #print(resp.content)
             with open(docName, mode='wb') as localfile:
                 localfile.write(resp.content)
         else:
@@ -1317,7 +1319,7 @@ def getPurchaseOrderById(orderId: int) -> list:
         for i in len(row):
             myList.append(row[i])
 
-        return (myList)
+        return myList
 
     except Exception as e:
         print(f'problem in getPurchaseOrderById: {e}')
@@ -1340,7 +1342,7 @@ def getOrderByOrderNbr(orderNbr: int) -> list:
         for row in rows:
             myList.append(row)
 
-        return (myList)  # myList[0][3]
+        return myList     # myList[0][3]
 
     except Exception as e:
         print(f'problem in getOrderByOrderNbr: {e}')
@@ -1361,7 +1363,7 @@ def getMaxOrderId():
         if row[0] != None:
             maxOrderId = row[0]
 
-        return(maxOrderId)
+        return maxOrderId
 
     except Exception as e:
         print(f'problem in getMaxOrderId: {e}')
@@ -1382,7 +1384,7 @@ def getCount(tableName: str) -> int:
         if row[0] != None:
             count = row[0]
 
-        return (count)
+        return count
 
     except Exception as e:
         print(f'problem in getCount: {e}')
@@ -1406,7 +1408,7 @@ def getOrderByCount() -> list:
             myList.append(ar)
 
 
-        return (myList)
+        return myList
 
     except Exception as e:
         print(f'problem in getOrderbyCount: {e}')
@@ -1430,7 +1432,7 @@ def getOrderByMonth() -> list:
             myList.append(ar)
 
 
-        return (myList)
+        return myList
 
     except Exception as e:
         print(f'problem in getOrderbyMonth: {e}')
@@ -1448,7 +1450,7 @@ def getUserLanguage(username: str) -> str:
         conn.commit()
         cur.close()
 
-        return (lang[0])
+        return lang[0]
 
     except Exception as e:
         print(f'problem in getUserLanguage: {e}')
@@ -1587,7 +1589,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['purchaseOrderDate'] = 'Purchase Order Date'
             session['purchaseOrderTable'] = 'Purchase Order Table'
 
-        return(currentLang)
+        return currentLang
 
     except Exception as e:
         print(f'problem in createSessionObjects: {e}')
@@ -1605,7 +1607,8 @@ def getActive(tableName: str, colName: str, btrue: bool) -> list:
         resultset = cur.fetchall()
         conn.commit()
         cur.close()
-        return(resultset)
+
+        return resultset
 
     except Exception as e:
         print(f'problem in getActive: {e}')
@@ -1633,8 +1636,8 @@ def printDoc():
         docList = glob.glob(fname)
 
         myhost = 'https://www.pythonanywhere.com/user/wayneraid'
-        myUsername = 'wayneraid'
-        myPW = 'Ilike2code'
+        myUsername = '???'
+        myPW = '????'
 
         remoteDir = 'https://www.pythonanywhere.com/user/wayneraid/files/home/wayneraid/surgenor/app/static/purchaseOrders/'
 
@@ -1668,3 +1671,27 @@ def printDoc():
 '''
 
 
+def addDocToDeleteQueue(fname: str) -> None:
+    try:
+        with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "a") as deleteQueue:
+           deleteQueue.write(fname)
+
+    except Exception as e:
+        print(f'problem in addDocToDeleteQueue: {e}')
+
+    return
+
+def deletePreviousPrintedFiles() -> None:
+    try:
+        with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
+            for fname in deleteQueue:
+                os.remove(constants.DOC_DIRECTORY + fname)
+
+        # once all *.docx file have been deleted, delete the deleteQueue.txt file
+        # in preparation of appending new *.docx files
+        os.remove(constants.DOC_DIRECTORY + "deleteQueue.txt")
+
+    except Exception as e:
+        print(f'problem in deletePreviousPrintedFiles: {e}')
+
+    return
