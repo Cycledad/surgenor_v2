@@ -729,7 +729,7 @@ def insertOrder(parms) -> None:
         conn = getConnection(db)
         cur = conn.cursor()
 
-        supplierName = parms[3]
+        supplierName = parms[2]
         stmt = f'select id from supplier where supplierName = "{supplierName}"'
         cur.execute(stmt)
         supplierId = cur.fetchone()
@@ -753,21 +753,23 @@ def insertOrder(parms) -> None:
         deptName = deptName[0]
 
         #OrderNbr = parms[0]
-        orderPartNbr = parms[1]
-        orderDesc = parms[2]
+        #orderPartNbr = parms[1]
+        orderDesc = parms[1]
         orderSupplierId = supplierId
-        orderQuantity= parms[4]
-        orderPartPrice = parms[5]
+        orderQuantity= parms[3]
+        orderPartPrice = parms[4]
         #orderTotalCost = parms[5]
-        orderUsername = parms[6]
+        orderUsername = parms[5]
 
         #rebuild parms adding deptname, po and username
         #params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, 1)
-        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername,)
+        #params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername,)
+        params = (orderNbr, orderSupplierId, deptName, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername,)
 
         #ACTIVE INDICATOR NOW SET AS DEFAULT IN DB
         #stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername, orderActive ) values (?,?,?,?,?,?,?,?,?,?)'
-        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?,?)'
+        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?)'
+        #stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?,?)'
         cur.execute(stmt, params)
         cur.close()
         conn.commit()
@@ -814,9 +816,11 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         cur = conn.cursor()
         #if GOD_LEVEL then show ALL purchase orders, active and non-active
         if securityLevel == constants.GOD_LEVEL:
-            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+            #stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         else:
-            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
+            #stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
 
         cur.execute(stmt)
         row = cur.fetchall()
@@ -1091,7 +1095,7 @@ def createPrintDoc(orderList: list) -> None:
     try:
         myList: list = []
         previousSupplierId = orderList[0][2]
-        docName = orderList[0][12]
+        docName = orderList[0][11]
         orderTotalCost: float = 0.0
 
         for order in orderList:
@@ -1104,7 +1108,7 @@ def createPrintDoc(orderList: list) -> None:
                 orderTotalCost = 0.0
                 myList, orderTotalCost = buildDoc(order, myList, orderTotalCost)
                 previousSupplierId = supplierId
-                docName = order[12]
+                docName = order[11]
             else:
                 myList, orderTotalCost = buildDoc(order, myList, orderTotalCost)
 
@@ -1120,13 +1124,14 @@ def createPrintDoc(orderList: list) -> None:
 def buildDoc(order, myList: list, orderTotalCost: float):
     try:
         #partDesc = getTableItemById(order[4], 'Part', 'partDesc')
-        partNbr = order[4]
-        partDesc = order[5]
-        orderQuantity = order[6]
-        orderPartPrice = order[7] if not order[7] == '' else 0.0
+        #partNbr = order[4]
+        partDesc = order[4]
+        orderQuantity = order[5]
+        orderPartPrice = order[6] if not order[6] == '' else 0.0
         orderCost = orderQuantity * orderPartPrice
         orderTotalCost += orderCost
-        myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'partNbr': partNbr, 'orderCost': orderCost})
+        myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'orderCost': orderCost})
+        #myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'partNbr': partNbr, 'orderCost': orderCost})
 
         return myList, orderTotalCost
 

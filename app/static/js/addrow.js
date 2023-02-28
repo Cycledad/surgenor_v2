@@ -31,8 +31,8 @@ debugger;
         cols += '<div class="col-1"><div class="input-group mb-3"><input type="number" step="0" min=0 class="form-control" name="quantity' + counter + '" id="quantity' + counter + '"/></div></div>';
 
 
-        var partNbr = '';
-        partNbr = '<div class="col-2"> <div class="input-group mb-3"><input type="text" name="partNbr' + counter + '" id="partNbr' + counter + '" class="form-control" required /></div></div>';
+        //var partNbr = '';
+        //partNbr = '<div class="col-2"> <div class="input-group mb-3"><input type="text" name="partNbr' + counter + '" id="partNbr' + counter + '" class="form-control" required /></div></div>';
         //PartNbr = '<td><select name="PartNbr' + counter + '" class=\'form-control\'  id="PartNbr' + counter + '" required >';
         //PartNbr += '<option value="">--Please select a part nbr</option>';
         //for (var i = 1; i < document.getElementById('PartNbr').length; i++)
@@ -40,12 +40,12 @@ debugger;
         //    PartNbr += '<option value="' + document.getElementById("PartNbr").options[i].text + '">' + document.getElementById("PartNbr").options[i].text + '</option>';
         //}
         //PartNbr += '</select></td>';
-        cols += partNbr;
+        //cols += partNbr;
 
 
         /*cols += '<td><input type="text" class="form-control" name="description' + counter + '"/></td>';*/
         var partDesc = '';
-        partDesc = '<div class="col-4"> <div class="input-group mb-3"><textarea name="desc' + counter + '" id="desc' + counter + '" rows=2 cols=2 class="form-control" required></textarea></div></div>';
+        partDesc = '<div class="col-6"> <div class="input-group mb-3"><textarea name="desc' + counter + '" id="desc' + counter + '" rows=2 cols=2 class="form-control" required></textarea></div></div>';
         //PartDesc = '<td><select name="PartDesc' + counter + '" class=\'form-control\' id="PartDesc' + counter + '" required >';
         //PartDesc += '<option value="">--Please select part description</option>';
         //for (var i = 1; i < document.getElementById('PartDesc').length; i++)

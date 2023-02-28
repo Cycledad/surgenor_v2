@@ -9,7 +9,7 @@ CREATE TABLE OrderTbl (
 	OrderNbr INTEGER NOT NULL,
 	OrderSupplierId INTEGER NOT NULL,
 	deptName TEXT NOT NULL,
-	OrderPartNbr TEXT NOT NULL,
+	--OrderPartNbr TEXT NOT NULL,
 	OrderPartDesc TEXT NOT NULL,
 	OrderQuantity INTEGER NOT NULL,
 	--OrderUnitId INTEGER NOT NULL,

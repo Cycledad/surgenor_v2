@@ -128,7 +128,7 @@ def addOrder():
             resultList.insert(2, session['username'])
 
             nbrOfOrderItems = len(resultList) - 3  # first 3 items are the same for all orders
-            nbrOfRecs = int(nbrOfOrderItems / 5)  # 5 is the nbr of items per rec
+            nbrOfRecs = int(nbrOfOrderItems / 4)  # 5 is the nbr of items per rec
 
             i: int = 3
             for idx in range(0, nbrOfRecs):
@@ -140,23 +140,24 @@ def addOrder():
                 i += 1
                 quantity = resultList[i]
                 i += 1
-                partNbr = resultList[i]
-                i += 1
+                #partNbr = resultList[i]
+                #i += 1
                 partDesc = resultList[i]
                 i += 1
                 unitPrice = resultList[i]
                 i += 1
 
-                parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
+                parms = (orderNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
+                #parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
 
                 # creates order in the orderTbl ... there can be many orders for one purchase order
                 utilities.insertOrder(parms)
 
-            utilities.updateMaxOrderNbr(orderNbr)
+            utilities.updateMaxOrderNbr(purchaseOrderNbr)
 
             # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
-            # the po doc is now create by clicking print btn on managePurchaseOrder tabulator page
-            orderList = utilities.getOrderByOrderNbr(orderNbr)
+
+            orderList = utilities.getOrderByOrderNbr(purchaseOrderNbr)
             utilities.createPrintDoc(orderList)
 
     except Exception as e:
@@ -168,15 +169,17 @@ def addOrder():
     # listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
     listPartDesc = utilities.getALLPartDesc()
     # listPartDesc = utilities.getALLITEMS('part', 'partDesc')
-    listPartNbr = utilities.getALLPartNbr()
+    #listPartNbr = utilities.getALLPartNbr()
     # listPartNbr = utilities.getALLITEMS('part', 'partNbr')
     listSupplierNames = utilities.getALLSupplierName()
     # listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
-    return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
-                           listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
+    return render_template('addOrder.html', listPartDesc=listPartDesc, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
                            listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
 
+    #return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
+    #                       listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
+    #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
 
 @app.route('/addPart', methods=['GET', 'POST'])
 def addPart():
@@ -501,7 +504,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     alist: list = []
     for row in resultList:
         alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-            row[13], row[14], row[15], row[16], row[17], row[18])
+            row[13], row[14], row[15], row[16], row[17])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
@@ -823,84 +826,7 @@ def manageUser():
         print(f'problem in manageUser: {e}')
 
     return render_template('manageUser.html')
-'''
-#@app.route('/viewDoc', methods=['GET', 'POST'])
-def viewDoc_SaveCopy():
-    try:
-        from flask import send_from_directory
-        import glob
-        #print('at the beginning of viewdoc')
-        theList = []
 
-        if session.get('loggedOn', None) is None:
-            flash(session['pleaseLogin'], 'danger')
-            return redirect(url_for('login'))
-
-        if request.method == 'POST':
-
-            req = request.form
-
-            #print(f'viewdoc post - req is: {req}')
-            # executing LOCALLY
-            directory = constants.DOC_DIRECTORY
-
-            # executing on SERVER
-            # directory = '/home/wayneraid/surgenor/app/'
-
-            # was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
-            # problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
-            # write protect document, IROTH = can be read by others
-            # fname = req['selFile']
-            # filePathName = directory + fname
-            # os.chmod(filePathName, stat.S_IRWXO )
-
-            # fname = req['selFile']
-            fname = request.form.get('selFile', '')
-
-            if len(myGlobals.printQueue) == 0:
-                theList.append('no files found')
-                return render_template('viewDoc.html', docList=theList)
-
-            elif fname == '':
-                # this happens when submit button is pressed with no selection
-                return render_template('viewDoc.html', docList=myGlobals.printQueue)
-            else:
-                # myGlobals.printQueue.remove(fname)
-                return send_from_directory(directory, fname, as_attachment=True)
-
-            # os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
-
-        # remove/separate directory from filename
-
-        fname = constants.DOC_DIRECTORY + '*.docx'
-        docList = glob.glob(fname)
-
-        for i in range(len(docList)):
-            x = docList[i].replace('\\', '/')
-            x = x.rsplit('/')
-            theList.append(x[len(x) - 1])
-
-        # delete any files not found in print queue
-        for i in range(len(theList)):
-            if theList[i] not in myGlobals.printQueue:
-                fname = constants.DOC_DIRECTORY + theList[i]
-                #print(f'going to delete file: {fname}')
-                os.remove(fname)
-                # theList.pop(i)
-                #print(f'deleted file: {fname}')
-
-        #print(f'theList: {theList}')
-
-        if len(myGlobals.printQueue) < 1:
-            return render_template('viewDoc.html', docList=['no files found'])
-
-        return render_template('viewDoc.html', docList=myGlobals.printQueue)
-
-
-
-    except Exception as e:
-        print(f'problem in viewDoc: {e}')
-'''
 
 @app.route('/viewDoc', methods=['GET', 'POST'])
 def viewDoc():

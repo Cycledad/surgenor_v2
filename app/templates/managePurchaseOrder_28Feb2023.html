@@ -47,7 +47,7 @@ var updateReturnQuantity = (cell) =>
     let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
 
     let id = rowData["1"];
-    let returnQuantity = rowData[13];
+    let returnQuantity = rowData[14];
 
     if (returnQuantity < 0) {
         if (lang == 'en-us') {
@@ -66,7 +66,7 @@ var updateReturnQuantity = (cell) =>
             alert(msg);
         }
         else {
-            let quantityOrdered = rowData[8];
+            let quantityOrdered = rowData[9];
             if (returnQuantity > quantityOrdered) {
                 if (lang == 'en-us')
                 {
@@ -128,7 +128,7 @@ var updateReceivedBy = (cell) =>
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["1"];
-    receivedBy = rowData[11];   //receivedBy
+    receivedBy = rowData[12];   //receivedBy
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
@@ -145,9 +145,9 @@ var updateActive = (cell) =>
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["1"];
-    activeFlg = rowData[16];   //active indicator flag
+    activeFlg = rowData[17];   //active indicator flag
     value = id + "," + activeFlg;
-    securityLevel = rowData[17]
+    securityLevel = rowData[18]
     if (securityLevel < 5) {
         if (lang == 'en-us')
         {
@@ -265,18 +265,18 @@ var table = new Tabulator("#example-table",
                     "4" : "numéro de bon de commande",          //Purchase Order Number
                     "5" : "date de commande d'achat",           //Purchase Order Date
                     "6" : "fournisseur",                        //Supplier
-                    //"7" : "numéro de pièce",                    //Part Number
-                    "7" : "description",            //Part Description
-                    "8" : "quantité",                           //Quantity,
-                    "9" : "prix unitaire",                      //Part Price
-                    "10": "date de réception de la commande",   //Order Received Date
-                    "11": "commande reçue par",                //Order Received By
-                    "12": "date de retour de la commande",       //Order Return Date
-                    "13": "quantité de retour de commande",      //Order Return Quantity
-                    "14": "PO",                                  //PO - this is the print document PO number
-                    "15": "utilisateur",                         //User
-                    "16": "ordre actif",                         //active indicator
-                    "17": "imprimer",                            //Print
+                    "7" : "numéro de pièce",                    //Part Number
+                    "8" : "description",            //Part Description
+                    "9" : "quantité",                           //Quantity,
+                    "10" : "prix unitaire",                      //Part Price
+                    "11": "date de réception de la commande",   //Order Received Date
+                    "12": "commande reçue par",                //Order Received By
+                    "13": "date de retour de la commande",       //Order Return Date
+                    "14": "quantité de retour de commande",      //Order Return Quantity
+                    "15": "PO",                                  //PO - this is the print document PO number
+                    "16": "utilisateur",                         //User
+                    "17": "ordre actif",                         //active indicator
+                    "18": "imprimer",                            //Print
                 },
                  "pagination":{
                 "first":"Premier",
@@ -300,8 +300,8 @@ var table = new Tabulator("#example-table",
                     "4":"Trouver un numéro de bon de commande ...",
                     "5":"Trouver la date du bon de commande ...",
                     "6":"Trouver un fournisseur ...",
-                    //"7":"Trouver un numéro de pièce ...",
-                    "7":"Trouver une description ...",
+                    "7":"Trouver un numéro de pièce ...",
+                    "8":"Trouver une description ...",
                 }
             }
 
@@ -319,19 +319,19 @@ var table = new Tabulator("#example-table",
         {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchase Order Number ..."},
         {title:"Purchase Order Date", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchase Order Date ..."},
         {title:"Supplier", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
-        //{title:"Part Number", field:"7", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
-        {title:"Description", field:"7", hozAlign:"left", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
-        {title:"Quantity", field:"8", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateOrderQuantity},
-        {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
-        {title:"Order Received Date", field:"10", hozAlign:"center", editor:dateEditor},
-        {title:"Order Received By", field:"11", sorter: "string", hozAlign:"center", editor:"list", editorParams:parmLookup, cellEdited:updateReceivedBy},
-        {title:"Order Return Date", field:"12", hozAlign:"center", editor:dateEditor},
-        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateReturnQuantity},
-        {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},
-        {title:"User", field:"15", hozAlign:"center", sorter:"string", editor:false},
-        {title:"Order Active", field:"16", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
-        {title:"Print", field:"17", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
-        {title:"securityLevel", field:"18", hozAlign:"center", sorter:"number", visible:false},
+        {title:"Part Number", field:"7", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
+        {title:"Description", field:"8", hozAlign:"left", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
+        {title:"Quantity", field:"9", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateOrderQuantity},
+        {title:"Part Price", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"Order Received Date", field:"11", hozAlign:"center", editor:dateEditor},
+        {title:"Order Received By", field:"12", sorter: "string", hozAlign:"center", editor:"list", editorParams:parmLookup, cellEdited:updateReceivedBy},
+        {title:"Order Return Date", field:"13", hozAlign:"center", editor:dateEditor},
+        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateReturnQuantity},
+        {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
+        {title:"User", field:"16", hozAlign:"center", sorter:"string", editor:false},
+        {title:"Order Active", field:"17", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
+        {title:"Print", field:"18", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"securityLevel", field:"19", hozAlign:"center", sorter:"number", visible:false},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
@@ -344,7 +344,7 @@ var table = new Tabulator("#example-table",
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '','','','','', '', '', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '', '', '', '', '']
 
 
 table.on('tableBuilt', function(){
@@ -394,10 +394,10 @@ function updateDate(cell) {
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     let id = rowData["1"]
-    let dt_order_received = rowData[10] //date order received col
-    let dt_order_returned = rowData[12] //date order returned col
+    let dt_order_received = rowData[11] //date order received col
+    let dt_order_returned = rowData[13] //date order returned col
     let value= id + "," + dt_order_received + "," + dt_order_returned
-    let activeFlg = rowData[16];   //active indicator flag
+    let activeFlg = rowData[17];   //active indicator flag
     let URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;  //update
     let reply = false;
 
