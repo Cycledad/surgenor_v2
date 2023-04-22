@@ -82,7 +82,7 @@ def getProvincialTaxRate(provincialCode: str) -> list:
         print(f'problem in getProvincialTaxRate: {e}')
 def getUnitDesc(id: int) -> str:
     try:
-        row: str = ''
+        row: str = None
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -166,15 +166,15 @@ def getPartId(Desc: str) -> int:
         print(f'problem in getPartId: {e}')
 
 
-def updatePurchaser(id: int, givenName: str, surname: str, purchaserDeptId: int, purchaserActive: bool,
+def updatePurchaser(id: int, purchaserName: str, purchaserDeptId: int, purchaserActive: bool,
                     purchaserDateInActive: str, purchaserDateCreated: str) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parms = (givenName, surname, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
-        stmt = 'update Purchaser set givenName = ?, surname = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
+        parms = (purchaserName, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
+        stmt = 'update Purchaser set purchaserName = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -263,15 +263,15 @@ def updatePurchaseOrderTable(id: int, purchaseOrderDate: str, purchaseOrderRecei
     except Exception as e:
         print(f'problem in updatePurchaseOrderTable: {e}')
 
-def updateUser(id: int, givenName: str, surname: str, username: str, password: str, createDate: str, active: bool, dateInactive: str,
+def updateUser(id: int, username: str, password: str, createDate: str, active: bool, dateInactive: str,
                securityLevel: int) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parms = (givenName, surname, username, password, createDate, active, dateInactive, securityLevel, id,)
-        stmt = 'update User set givenName = ?, surname = ?, username = ?, password = ?, createDate = ?, active = ?, dateInactive = ?, securityLevel = ? where id = ?'
+        parms = (username, password, createDate, active, dateInactive, securityLevel, id,)
+        stmt = 'update User set username = ?, password = ?, createDate = ?, active = ?, dateInactive = ?, securityLevel = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -312,8 +312,7 @@ def insertPurchaser(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        #stmt = 'INSERT INTO Purchaser (givenName, surname, purchaserDeptId, purchaserActive) values (?, ?, ?, ?)'
-        stmt = 'INSERT INTO Purchaser (username, purchaserDeptId, purchaserActive) values (?, ?, ?)'
+        stmt = 'INSERT INTO Purchaser (purchaserName, purchaserDeptId, purchaserActive) values (?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -326,20 +325,20 @@ def insertPurchaser(parms) -> None:
         print(f'problem in insertPurchaser: {e}')
 
 
-def getPurchaserId(username: str) -> int:
+def getPurchaserId(purchaserName: str) -> int:
     try:
         row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        #nameList = purchaserName.split
-        #givenName = nameList[0]
-        #surname = nameList[1]
+        nameList = purchaserName.split
+        givenName = nameList[0]
+        surname = nameList[1]
         #parm = (name,)
-        parm = (username,)
+        parm = (givenName, surname,)
         #stmt = 'select Id from user where username = ? and active' #as per kevin Jan 16, 2023
-        stmt = 'select Id from purchaser where username = ? and purchaserActive'
+        stmt = 'select Id from purchaser where givenName = ? and surname = ? and purchaserActive'
         # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -352,19 +351,15 @@ def getPurchaserId(username: str) -> int:
         print(f'problem in getPurchaserId: {e}')
 
 
-def getPurchaserDeptId(username: str) -> int:
+def getPurchaserDeptId(purchaserName: str) -> int:
     try:
         row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        #nameList = purchaserName.split
-        #givenName = nameList[0]
-        #surname = nameList[1]
-        #parm = (givenName, surname,)
-        parm = (username,)
-        stmt = 'select purchaserDeptId from purchaser where username = ? and purchaserActive'
+        parm = (purchaserName,)
+        stmt = 'select purchaserDeptId from purchaser where purchaserName = ? and purchaserActive is True'
         # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -636,11 +631,11 @@ def getALLPurchasers() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'select givenName, surname from purchaser where purchaserActive is True'
+        stmt = 'select purchaserName from purchaser where purchaserActive is True'
         cur.execute(stmt)
         row = cur.fetchall()
         for r in row:
-            myList.append(r[0] + ' ' + r[1])
+            myList.append(r[0])
         cur.close()
         conn.close()
 
@@ -649,35 +644,6 @@ def getALLPurchasers() -> list:
 
     except Exception as e:
         print(f'problem in getALLPurchaser: {e}')
-
-def getPurchaser(username: str) -> str:
-        try:
-            row: list = []
-            #myList: list = []
-            purchaserName: str
-
-            db = getDatabase(constants.DATABASE_NAME)
-            conn = getConnection(db)
-            cur = conn.cursor()
-            parm = (username,)
-            stmt = 'select u.givenName, u.surname from user u, purchaser p where p.purchaserActive is True and u.username = p.username and u.username = ?'
-            cur.execute(stmt, parm)
-            row = cur.fetchone()
-            if row is None:
-                raise Exception
-
-            #for r in row:
-            #myList.append(r[0] + ' ' + r[1])
-            purchaserName = row[0] + ' ' + row[1]
-            cur.close()
-            conn.close()
-
-            #return myList
-            return purchaserName
-
-
-        except Exception as e:
-            print(f'problem in getPurchaser: {e}')
 
 
 def getALLITEMS(tblName: str, colName: str) -> list:
@@ -715,7 +681,7 @@ def getMaxOrderNbr() -> int:
         row = cur.fetchone()
 
         maxPurchaseOrderNbr = row[0]
-        if row[0] is None:
+        if row[0] == None:
             maxPurchaseOrderNbr = 0
 
         cur.close()
@@ -854,10 +820,10 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         cur = conn.cursor()
         #if GOD_LEVEL then show ALL purchase orders, active and non-active
         if securityLevel == constants.GOD_LEVEL:
-            stmt = f'select p.id, o.id, purchaser.username, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
             #stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         else:
-            stmt = f'select p.id, o.id, purchaser.username, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
             #stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
 
         cur.execute(stmt)
@@ -1086,27 +1052,25 @@ def getUserSecurityLevel(username: str) -> int:
         print(f'problem in getUserSecurityLevel: {e}')
 
 
-def getUser(username: str) -> bool:
+def getUserRegistered(username: str) -> bool:
     try:
         exists: bool = False
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (username,)
-        #stmt = "select username from user where username = ? and active is True"
-        stmt = "select * from user where username = ? and active"
+        stmt = "select username from user where username = ? and active is True"
         cur.execute(stmt, parm)
-        result = cur.fetchone()
+        user = cur.fetchone()
         conn.commit()
         cur.close()
-        #if result is not None:
-        #    exists = True
+        if user != None:
+            exists = True
 
-        #return exists
-        return result
+        return exists
 
     except Exception as e:
-        print(f'problem in getUser: {e}')
+        print(f'problem in getUserRegistered: {e}')
 
 
 def getTable(tableName: str) -> list:

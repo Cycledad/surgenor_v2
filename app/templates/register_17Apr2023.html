@@ -6,18 +6,8 @@
 <form action="#" method="post" class="form-group">
     <div class="form-group">
         <div class="form-group">
-            <label for="givenName">{% if 'givenName' in session %} {{ session['givenName'] }} {% else %} Given Name {% endif %}</label>
-            <input type="text" class='form-control' id="givenName" name="givenName" minlength="3" required>
-        </div>
-        <br>
-        <div class="form-group">
-            <label for="surname">{% if 'surname' in session %} {{ session['surname'] }} {% else %} Surname {% endif %}</label>
-            <input type="text" class='form-control' id="surname" name="surname" minlength="2" required>
-        </div>
-        <br>
-        <div class="form-group">
             <label for="username">{% if 'userNm' in session %} {{ session['userNm'] }} {% else %} Username {% endif %}</label>
-            <input type="text" class='form-control' id="username" name="username" minlength="5" required>
+            <input type="text" class='form-control' id="username" name="username" required>
         </div>
         <br>
         <div class="form-group">

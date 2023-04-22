@@ -115,29 +115,37 @@ values('01121999', '15121999', False, 10,2,1);
 DROP TABLE IF EXISTS Purchaser;
 CREATE TABLE Purchaser (
 	id INTEGER NOT NULL,
-	purchaserName TEXT NOT NULL,
+	username text not null unique,
+	--givenName   TEXT NOT NULL,
+	--surname     TEXT NOT NULL,
+---	purchaserName TEXT NOT NULL,
 	purchaserDeptId INTEGER NOT NULL,
 	purchaserActive BOOLEAN NOT NULL,    /* boolean */
 	purchaserDateInActive TEXT,
 	purchaserDateCreated TEXT DEFAULT(DATE()) NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	UNIQUE (purchaserName)
+	PRIMARY KEY("id" AUTOINCREMENT)
+
 );
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive)
+VALUES('kevin', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
-VALUES('Daniel Savoie', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive)
+VALUES('admin', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
-VALUES('Jessy G-B', 1, true);
+--INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
+--VALUES('Daniel', 'Savoie', 3, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
-VALUES('Kevin Davis', 1, true);
+--INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
+--VALUES('Jessy', 'G-B', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
-VALUES('Ron Bergeron', 5, true);
+--INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
+--VALUES('Kevin', 'Davis', 1, true);
 
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive)
-VALUES('Simon Landreville', 2, true);
+--INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
+--VALUES('Ron', 'Bergeron', 5, true);
+
+--INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
+--VALUES('Simon', 'Landreville', 2, true);
 
 DROP TABLE IF EXISTS Supplier;
 CREATE TABLE Supplier (
@@ -207,10 +215,12 @@ INSERT INTO Department(deptName, active) values('Sales', true);
 INSERT INTO Department(deptName, active) values('Service', true);
 INSERT INTO Department(deptName, active) values('BodyShop', true);
 
-
+--note, givenName & surname in table User should match givenName & surname in Purchaser table ... im not using foreign keys
 drop table if exists User;
 CREATE TABLE User (
 	id	INTEGER,
+	givenName   TEXT NOT NULL,
+	surname     TEXT NOT NULL,
 	username	TEXT NOT NULL UNIQUE,
 	password	TEXT NOT NULL UNIQUE,
 	createDate	TEXT DEFAULT(DATE()) NOT NULL,
@@ -220,8 +230,8 @@ CREATE TABLE User (
 	PRIMARY KEY("id" AUTOINCREMENT));
 
 
-insert into user (username, password, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', DATE('now'), True, 5);
-insert into user (username, password, createDate, active, securityLevel) values('kevin', '$2b$12$QvBCaPauAgQsJEEhBv8lSusozWKYlDRr.SBjHLLqaWNUMZ7sH2c.W', DATE('now'), True, 5);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', 'admin', 'admin', DATE('now'), True, 5);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('kevin', '$2b$12$QvBCaPauAgQsJEEhBv8lSusozWKYlDRr.SBjHLLqaWNUMZ7sH2c.W', 'Kevin', 'Davis', DATE('now'), True, 5);
 
 drop table if exists ProvincialTaxRates;
 CREATE TABLE ProvincialTaxRates (

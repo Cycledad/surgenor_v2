@@ -41,7 +41,7 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 var updateReturnQuantity = (cell) =>
 {
     //alert("say it");
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
@@ -90,7 +90,7 @@ var updateReturnQuantity = (cell) =>
 var updateOrderQuantity = (cell) =>
 {
     //alert("say it");
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
@@ -124,7 +124,7 @@ var updateOrderQuantity = (cell) =>
 
 var updateReceivedBy = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["1"];
@@ -141,7 +141,7 @@ var updateReceivedBy = (cell) =>
 
 var updateActive = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["1"];
@@ -237,7 +237,7 @@ var printIcon = function(cell, formatterParams, onrendered){
     return "<img src=./static/img/printer-16.png>";
 };
 
-debugger;
+//debugger;
 //Build Tabulator
 var table = new Tabulator("#example-table",
 {
@@ -353,7 +353,7 @@ table.on('tableBuilt', function(){
     xhttp = new XMLHttpRequest();
     xhttp.open("GET", URL);
     xhttp.send();
-    debugger;
+    //debugger;
     xhttp.onreadystatechange = function ()
     {
         if (this.readyState == 4 && this.status == 200)
@@ -389,7 +389,7 @@ document.getElementById("ajax-trigger").addEventListener("click", function(){
 */
 
 function updateDate(cell) {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table

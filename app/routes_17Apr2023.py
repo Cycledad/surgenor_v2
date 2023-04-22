@@ -39,20 +39,12 @@ def addPurchaser():
 
         if request.method == "POST":
             req = request.form
-            username = req.get('username')
-            result = utilities.getUser(username)
-            if result is None:
-                flash('invalid username in addPurchaser - purchaser must ALREADY be a registered user', 'warning')
-                raise Exception('invalid username in addPurchaser')
-            #givenName = req.get('givenName')
-            #surname = req.get('surname')
-            #name = req['pName']
+            name = req['pName']
             active = True if req['pActive'] == 'YES' else False  # 1=true, 0=false
             deptName = req['selectDepartment']
             # dateCreated = dt.date.today() - done now in db
             deptId = utilities.getDepartmentId(deptName)
-            #parms = (givenName, surname, deptId, active,)
-            parms = (username, deptId, active,)
+            parms = (name, deptId, active,)
             utilities.insertPurchaser(parms)
 
 
@@ -126,8 +118,8 @@ def addOrder():
             # 1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
             purchaserName = resultList[1]
-            purchaserId = utilities.getPurchaserId(session['username'])
-            purchaserDeptId = utilities.getPurchaserDeptId(session['username'])
+            purchaserId = utilities.getPurchaserId(purchaserName)
+            purchaserDeptId = utilities.getPurchaserDeptId(purchaserName)
             utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptId)
 
             # resultList minus 3 gives total nbr of order items, less PONbr and purchaser
@@ -173,9 +165,7 @@ def addOrder():
 
     orderNbr = utilities.getMaxOrderNbr() + 1
 
-    purchaserName = utilities.getPurchaser(session['username'])
-
-    #listPurchaserName = utilities.getALLPurchasers()
+    listPurchaserName = utilities.getALLPurchasers()
     # listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
     listPartDesc = utilities.getALLPartDesc()
     # listPartDesc = utilities.getALLITEMS('part', 'partDesc')
@@ -184,7 +174,7 @@ def addOrder():
     listSupplierNames = utilities.getALLSupplierName()
     # listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
-    return render_template('addOrder.html', listPartDesc=listPartDesc, purchaserName=purchaserName, listSupplierNames=listSupplierNames,
+    return render_template('addOrder.html', listPartDesc=listPartDesc, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
                            listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
 
     #return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
@@ -259,12 +249,7 @@ def login():
             req = request.form
             username = req['username']
             pw = req['password']
-            #registered = utilities.getUserRegistered(username)
-            result = utilities.getUser(username)
-            if result is None:
-                registered = False
-            else:
-                registered = result[6]
+            registered = utilities.getUserRegistered(username)
             if not registered:
                 flash(session['notRegistered'], 'danger')
                 return redirect(url_for('register'))
@@ -308,11 +293,7 @@ def register():
             hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
             # TO COMPARE PASSWORD FOR VALIDITY
             pw_check = bcrypt.check_password_hash(hashed_pw, pw)
-            result = utilities.getUser(username)
-            if result is None:
-                registered = False
-            else:
-                registered = result[6]
+            registered = utilities.getUserRegistered(username)
             if registered:
                 flash(session['alreadyRegistered'], 'danger')
                 # return redirect(url_for('login'))
@@ -322,7 +303,6 @@ def register():
                 return redirect(url_for('login'))
 
     except Exception as e:
-        flash(f'{e}', 'danger')
         print(f'problem in register: {e}')
 
     return render_template('register.html')
@@ -371,7 +351,7 @@ def apimanageDepartment():
 def manageDepartment():
     try:
 
-        if session.get('loggedOn', None) is None:
+        if session.get('loggedOn', None) == None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -434,7 +414,7 @@ def apimanageParts():
 def manageParts():
     try:
 
-        if session.get('loggedOn', None) is None:
+        if session.get('loggedOn', None) == None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -525,16 +505,8 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     mylist: list = []
     alist: list = []
     for row in resultList:
-        #replace username with given name and surname
-        purchaserName = utilities.getPurchaser(row[2])
-        alist = (row[0], row[1], purchaserName, row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
+        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
             row[13], row[14], row[15], row[16], row[17])
-
-
-        #alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-        #    row[13], row[14], row[15], row[16], row[17])
-
-
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
@@ -708,13 +680,13 @@ def apimanagePurchaser():
         myList = value.split(',')
 
         id = int(myList[0])
-        username = myList[1]
+        purchaserName = myList[1]
         purchaserDeptId = myList[2]
         purchaserActive = myList[3]
         purchaserDateInActive = myList[4]
         purchaserDateCreated = myList[5]
 
-        utilities.updatePurchaser(id, username, purchaserDeptId, purchaserActive, purchaserDateInActive,
+        utilities.updatePurchaser(id, purchaserName, purchaserDeptId, purchaserActive, purchaserDateInActive,
                                   purchaserDateCreated)
 
     # reload tabulator.js table
@@ -801,21 +773,19 @@ def apimanageUser():
         myList = value.split(',')
 
         id = int(myList[0])
-        givenName = myList[1]
-        surname = myList[2]
-        username = myList[3]
-        password = myList[4]
-        createDate = myList[5]
-        active = myList[6]
-        dateInactive = myList[7]
-        securityLevel = myList[8]
+        username = myList[1]
+        password = myList[2]
+        createDate = myList[3]
+        active = myList[4]
+        dateInactive = myList[5]
+        securityLevel = myList[6]
 
-        utilities.updateUser(id, givenName, surname, username, password, createDate, active, dateInactive, securityLevel)
+        utilities.updateUser(id, username, password, createDate, active, dateInactive, securityLevel)
 
     # reload tabulator.js table
     resultList = utilities.getTable('User')
     for row in resultList:
-        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         d1 = dict(enumerate(aList))
         myList.append(d1)
 
@@ -828,7 +798,7 @@ def apimanageUser():
 def manageProvincialTaxRates():
     try:
 
-        if session.get('loggedOn', None) is None:
+        if session.get('loggedOn', None) == None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -1032,24 +1002,3 @@ def getLanguage() -> str:
 
     except Exception as e:
         print(f'problem in getLanguage: {e}')
-
-def getUserRegistered(username: str) -> bool:
-    try:
-        exists: bool = False
-        db = getDatabase(constants.DATABASE_NAME)
-        conn = getConnection(db)
-        cur = conn.cursor()
-        parm = (username,)
-        stmt = "select username from user where username = ? and active is True"
-        cur.execute(stmt, parm)
-        user = cur.fetchone()
-        conn.commit()
-        cur.close()
-        if user is not None:
-            exists = True
-
-        return exists
-
-    except Exception as e:
-        print(f'problem in getUserRegistered: {e}')
-

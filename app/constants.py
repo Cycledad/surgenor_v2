@@ -1,3 +1,5 @@
+
+#C:\Users\wayne\surgenor_v2\app\mysite.db
 DATABASE_NAME: str = 'mysite.db'
 RELOAD_DATABASE: bool = True
 

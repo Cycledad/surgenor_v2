@@ -40,17 +40,19 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 
 var updateCol = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData[0];
-    username = rowData[1];
-    password = rowData[2];
-    createDate = rowData[3];
-    active = rowData[4];
-    dateInactive = rowData[5];
-    securityLevel = rowData[6];
-    value = id + "," + username + "," + password + "," +  createDate + "," + active + "," + dateInactive + "," +  securityLevel
+    givenName = rowData[1];
+    surname = rowData[2];
+    username = rowData[3];
+    password = rowData[4];
+    createDate = rowData[5];
+    active = rowData[6];
+    dateInactive = rowData[7];
+    securityLevel = rowData[8];
+    value = id + "," + givenName + "," + surname + "," + username + "," + password + "," +  createDate + "," + active + "," + dateInactive + "," +  securityLevel
     URL = "/api/data/manageUser?action=update&value=" + value;
     table.setData(URL);
 };
@@ -83,12 +85,14 @@ var table = new Tabulator("#manageUser-table",
                //no need to define english, en, as it is default and title values will be used
                //translations done here: https://imtranslator.net/translation/english/to-french/translation/
                 "columns":{
-                    "1" : "nom d’utilisateur",                  //username
-                    "2" : "mot de passe",                       //password
-                    "3" : "créer la date",                      //createDate
-                    "4" : "actif",                              //active
-                    "5" : "dateInactif",                        //dateInActive
-                    "6" : "niveau de sécurité",                 //securityLevel
+                    "1" : "prénom",                             //given name
+                    "2" : "nom de famille",                     //surname
+                    "3" : "nom d’utilisateur",                  //username
+                    "4" : "mot de passe",                       //password
+                    "5" : "créer la date",                      //createDate
+                    "6" : "actif",                              //active
+                    "7" : "dateInactif",                        //dateInActive
+                    "8" : "niveau de sécurité",                 //securityLevel
                 },
                  "pagination":{
                 "first":"Premier",
@@ -107,12 +111,14 @@ var table = new Tabulator("#manageUser-table",
             "headerFilters":{
                             "default":"filter column...", //default header filter placeholder text
                             "columns":{
-                                "1":"Trouver le nom d’utilisateur ...", //replace default header filter text for column name
-                                "2":"Trouver un mot de passe ...",
-                                "3":"Trouver la date de création de l’utilisateur ...",
-                                "4":"Trouver des utilisateurs actifs ...",
-                                "5":"Trouver Date utilisateur inactif ...",
-                                "6":"Trouver le niveau de sécurité ...",
+                                "1":"Trouver le prénom ...", //replace default header filter text for column name
+                                "2":"Trouver le nom de famille ...", //replace default header filter text for column name
+                                "3":"Trouver le nom d’utilisateur ...", //replace default header filter text for column name
+                                "4":"Trouver un mot de passe ...",
+                                "5":"Trouver la date de création de l’utilisateur ...",
+                                "6":"Trouver des utilisateurs actifs ...",
+                                "7":"Trouver Date utilisateur inactif ...",
+                                "8":"Trouver le niveau de sécurité ...",
                             }
                         }
             },
@@ -123,16 +129,18 @@ var table = new Tabulator("#manageUser-table",
     ],
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
-        {title:"username", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Username ..."},
-        {title:"password", field:"2", hozAlign:"center", sorter:"string", editor:false, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Password ..."},
-        {title:"createDate", field:"3", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find User Creation Date ..."},
-        {title:"active", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Users ..."},
-        {title:"dateInActive", field:"5", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date User Inactive ..."},
-        {title:"securityLevel", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Security Level ..."},
+        {title:"given name", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Given Name ..."},
+        {title:"surname", field:"2", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Surname ..."},
+        {title:"username", field:"3", hozAlign:"center", sorter:"string", editor:false, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Username ..."},
+        {title:"password", field:"4", hozAlign:"center", sorter:"string", editor:false, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Password ..."},
+        {title:"createDate", field:"5", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find User Creation Date ..."},
+        {title:"active", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Users ..."},
+        {title:"dateInActive", field:"7", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date User Inactive ..."},
+        {title:"securityLevel", field:"8", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Security Level ..."},
     ],
 });
 
-columns: ['', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '']
 
 
 //cellEdited:updateCol,
@@ -150,7 +158,7 @@ table.on('tableBuilt', function(){
     xhttp = new XMLHttpRequest();
     xhttp.open("GET", URL);
     xhttp.send();
-    debugger;
+    //debugger;
     xhttp.onreadystatechange = function ()
     {
         if (this.readyState == 4 && this.status == 200)

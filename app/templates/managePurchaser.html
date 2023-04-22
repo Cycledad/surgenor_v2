@@ -41,16 +41,17 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 
 var updateCol = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData[0];
-	purchaserName = rowData[1];
-	purchaserDeptId = rowData[2];
-	purchaserActive = rowData[3];
-	purchaserDateInActive = rowData[4];
-	purchaserDateCreated = rowData[5];
-    value = id + "," + purchaserName + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated
+	givenName = rowData[1];
+	surname = rowData[2];
+	purchaserDeptId = rowData[3];
+	purchaserActive = rowData[4];
+	purchaserDateInActive = rowData[5];
+	purchaserDateCreated = rowData[6];
+    value = id + "," + username + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated
     URL = "/api/data/managePurchaser?action=update&value=" + value;
     table.setData(URL);
 };
@@ -122,7 +123,7 @@ var table = new Tabulator("#managePurchaser-table",
     ],
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
-        {title:"purchaserName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Name ..."},
+        {title:"username", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Given Name ..."},
         {title:"purchaserDeptId", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Department Id ..."},
         {title:"purchaserActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Purchaser ..."},
         {title:"purchaserDateInActive", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},

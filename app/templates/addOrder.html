@@ -13,14 +13,16 @@
 
     <div class="form-group mt-3">
           <label>{% if 'purchaser' in session %} {{ session['purchaser'] }} {% else %} Purchaser: {% endif %}</label>
-           <!---<input type="text" class='form-control' name="purchaseName" id="purchaseName" value="{{username}}" readonly/>-->
+          <input type="text" class='form-control' name="purchaserName" id="purchaserName" value="{{purchaserName}}" readonly/>
 
+          <!--
           <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
               <option value="">--{% if 'orderPurchaser' in session %} {{ session['orderPurchaser'] }} {% else %} Select a Purchaser{% endif %}--</option>
                   {% for purchaserName in listPurchaserName: %}
                       <option value='{{purchaserName}}'>{{purchaserName}}</option>
                   {% endfor %}
           </select>
+          -->
 
     </div>
     <br>

@@ -40,7 +40,7 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 
 var updateCol = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData[0];
@@ -129,9 +129,9 @@ var table = new Tabulator("#managePurchaseOrderTable",
     ],
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:true},
-        {title:"purchaseOrderDate", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Date ..."},
-        {title:"purchaseOrderReceivedDate", field:"2", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Received Date ..."},
-        {title:"purchaseOrderActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Active indicator ..."},
+        {title:"purchaseOrderDate", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Given Name ..."},
+        {title:"purchaseOrderReceivedDate", field:"2", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Surname ..."},
+        {title:"purchaseOrderActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Username ..."},
         {title:"purchaseOrderDateDeleted", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Inactive Date  ..."},
         {title:"purchaseOrderNbr", field:"5", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchase Order Number ..."},
         {title:"purchaseOrderPurchaserId", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Id ..."},
