@@ -177,16 +177,17 @@ def addOrder():
 
     #listPurchaserName = utilities.getALLPurchasers()
     # listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
-    listPartDesc = utilities.getALLPartDesc()
+    #listPartDesc = utilities.getALLPartDesc()
     # listPartDesc = utilities.getALLITEMS('part', 'partDesc')
     #listPartNbr = utilities.getALLPartNbr()
     # listPartNbr = utilities.getALLITEMS('part', 'partNbr')
     listSupplierNames = utilities.getALLSupplierName()
     # listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
-    listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
-    return render_template('addOrder.html', listPartDesc=listPartDesc, purchaserName=purchaserName, listSupplierNames=listSupplierNames,
-                           listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
-
+    #listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
+    #return render_template('addOrder.html', listPartDesc=listPartDesc, purchaserName=purchaserName, listSupplierNames=listSupplierNames,
+    #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
+    return render_template('addOrder.html', purchaserName=purchaserName, listSupplierNames=listSupplierNames,
+                           orderNbr=orderNbr, username=session['username'], lang=session['lang'])
     #return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
     #                       listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
     #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
