@@ -171,7 +171,11 @@ def addOrder():
     except Exception as e:
         print(f'problem in addOrder: {e}')
 
-    orderNbr = utilities.getMaxOrderNbr() + 1
+    orderNbr = utilities.getMaxOrderNbr() #Kevin asks that po number start at 1000
+    if orderNbr < 1000:
+        orderNbr = 1000
+    else:
+        orderNbr += 1
 
     purchaserName = utilities.getPurchaser(session['username'])
 

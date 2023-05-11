@@ -735,11 +735,12 @@ def updateMaxOrderNbr(orderNbr: int):
         cur = conn.cursor()
 
         parm = (orderNbr,)
-        if int(orderNbr) > 1:
-            stmt = f'update OrderNbrTbl set orderNbr = ?'
-        else:
-            stmt = f'insert into OrderNbrTbl values(?)'
+        #if int(orderNbr) > 1:
+        #
+        #else:
+        #    stmt = f'insert into OrderNbrTbl values(?)'
 
+        stmt = f'update OrderNbrTbl set orderNbr = ?'
         cur.execute(stmt, parm)
         cur.close()
         conn.commit()
