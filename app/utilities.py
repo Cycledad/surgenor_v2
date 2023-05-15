@@ -1187,9 +1187,11 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         doc = DocxTemplate(docPathTemplate)
 
         # these are common to all rows in the order
-        purchaseOrderId = order[1]
-        purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
-        PONbr = purchaseOrderId
+        #purchaseOrderId = order[1]
+        #purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
+        purchaseOrderDate = getPurchaseOrderDate(order[1])
+        PONbr = order[1]
+
         supplierName = getSupplierName(supplierId)
         #supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
         supplierProv = getTableItemById(supplierId, 'Supplier', 'supplierProv')
@@ -1349,6 +1351,28 @@ def downloadDocToLocalHost(docName: str) -> None:
 
     return
 
+
+def getPurchaseOrderDate(purchaseOrderNbr: int) -> str:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (purchaseOrderNbr,)
+        stmt = "select purchaseOrderDate from PurchaseOrder where purchaseOrderNbr = ? and purchaseOrderActive = True"
+        cur.execute(stmt, parm)
+        purchaseOrderDate = cur.fetchone()
+        conn.commit()
+        cur.close()
+
+        return purchaseOrderDate[0]
+
+    except Exception as e:
+        print(f'problem in getPurchaseOrderDate: {e}')
+
+
+
+
 def getPurchaseOrderById(orderId: int) -> list:
     try:
         myList = []
@@ -1357,13 +1381,13 @@ def getPurchaseOrderById(orderId: int) -> list:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (orderId,)
-        stmt = "select * from PurchaseOrder where id = ? and purchaseOrderActive = False"
+        stmt = "select * from PurchaseOrder where id = ? and purchaseOrderActive = True"
         cur.execute(stmt, parm)
         row = cur.fetchone()
         conn.commit()
         cur.close()
-        for i in len(row):
-            myList.append(row[i])
+        for i in row:
+            myList.append(i)
 
         return myList
 
