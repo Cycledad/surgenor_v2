@@ -28,7 +28,7 @@ debugger;
         selectSupplier += '</select></div></div>';
         cols += selectSupplier;
 
-        cols += '<div class="col-1"><div class="input-group mb-3"><input type="number" step="0" min=0 class="form-control" name="quantity' + counter + '" id="quantity' + counter + '"/></div></div>';
+        cols += '<div class="col-1"><div class="input-group mb-3"><input type="number" step="0" min=1 required class="form-control" name="quantity' + counter + '" id="quantity' + counter + '"/></div></div>';
 
 
         //var partNbr = '';

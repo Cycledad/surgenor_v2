@@ -126,11 +126,29 @@ CREATE TABLE Purchaser (
 	PRIMARY KEY("id" AUTOINCREMENT)
 
 );
-INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive)
-VALUES('kevin', 1, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('kevin', 1, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('admin', 1, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('AlainC', 6, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('ClaudiaD', 1, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('RonBergeron', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('DavidB', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('BenjaminB', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('EricD', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('GabrielI', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('ChristineK', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('LiseL', 6, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('MartinL', 3, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('StephaneR', 4, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('JuniorV', 4, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('NicholasC', 4, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('DanielS', 2, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('FrancisC', 2, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('SimonL', 5, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('BeryM', 5, true);
+INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('JesseyGB', 1, true);
 
-INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive)
-VALUES('admin', 1, true);
+
+
 
 --INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
 --VALUES('Daniel', 'Savoie', 3, true);
@@ -166,8 +184,21 @@ CREATE TABLE Supplier (
 	--UNIQUE (supplierContact)
 );
 
-INSERT INTO Supplier(supplierName, supplierProv, supplierActive)
-values('Benson', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('Benson', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('Fournitures De Bureau Denis', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('Gama', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('Pieces D''Auto Le Bon Choix', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('LKQ', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('AUTO VALUE', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('NAPA', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('LAR', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('TIRE LINK', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('STOX', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('FRISBY TIRE', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('DAI DIRECT AUTO IMPORT', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('TRANSBEC', 'QC', true);
+INSERT INTO Supplier(supplierName, supplierProv, supplierActive) values('CANTEEN', 'QC', true);
+
 /*
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Canadian Tire', '2 Dump Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wrong', true, '28012022');
@@ -214,6 +245,7 @@ INSERT INTO Department(deptName, active) values('Parts', true);
 INSERT INTO Department(deptName, active) values('Sales', true);
 INSERT INTO Department(deptName, active) values('Service', true);
 INSERT INTO Department(deptName, active) values('BodyShop', true);
+INSERT INTO Department(deptName, active) values('Admin', true);
 
 --note, givenName & surname in table User should match givenName & surname in Purchaser table ... im not using foreign keys
 drop table if exists User;
@@ -232,6 +264,26 @@ CREATE TABLE User (
 
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', 'admin', 'admin', DATE('now'), True, 5);
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('kevin', '$2b$12$QvBCaPauAgQsJEEhBv8lSusozWKYlDRr.SBjHLLqaWNUMZ7sH2c.W', 'Kevin', 'Davis', DATE('now'), True, 5);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('JesseyGB', '$2b$12$HOD9pOgXvghsww3n4q07..fvbpTjwCD2xW66BG.SMczbq6SOlZZgu', 'Jessey', 'Gromoll-Branchaud', DATE('now'), True, 5);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('AlainC', '$2b$12$yHpt2OwHMl9BQumcxa0jz.7kJ6ojSkMHT3snTr4weWgvRpUxkMJMK', 'ALAIN', 'CHARETTE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('ClaudiaD', '$2b$12$PZp3wbXsiOjHfMTL9FAdZ.MX1n4vqYSxdmn//fvwp9ll5q7dpC32G', 'CLAUDIA', 'DUSHIME', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('RonBergeron', '$2b$12$X/UJEmoblfmu/BudPl7kJ.vkdKsBGPChrG1pClCvU..Qe2NUS7vOi', 'RON', 'BERGERON', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('DavidB', '$2b$12$1sYOJLhZoQk7Voh9C6a4BOyEyIxFFF3rOdgpxpxzFtHCX9iVuuXBa', 'DAVID', 'BOISSELY', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('EricD', '$2b$12$46ckdTUHTio2FlUw8hfJbeVDfYEOZgs2ymptNB/x5ZxR7I55r44Cy', 'ERIC', 'DAGENAIS', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('GabrielI', '$2b$12$tgWNSbMqX/w2FolAdvZKcuFtZMbmiakb0nqT9ZPPtkJdYsPGlx7BG', 'GABRIEL', 'IONETE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('ChristineK', '$2b$12$IE0Jf1gudM2WVZQii4zw9OJNSljIc9RldaA3sgHXhxQ/nFzX2pDLe', 'CHRISTINE', 'KNIGHT', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('LiseL', '$2b$12$rTXuZZJ.jf5DiEyKm8o51ed0VbyNYJObnfGPlL6iYrKlUF6I3MFDq', 'LISE', 'LEDUC', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('StephaneR', '$2b$12$KQiPeEF06tdvrBL6ybhGJe7tDoxFrzyLxQMtSxi5X6HFI6lfd3UzW', 'STEPHANE', 'ROBITAILLE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('JuniorV', '$2b$12$aY6mhe5Xz7fNng.Uc0aHFuKvq2zDvfmjGTXrVEoTl547xERBJma1C', 'JEAN-MARC (JUNIOR)', 'VALLIERES', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('NicholasC', '$2b$12$lSBJK861h2ZwZ.zGpJK4Uurt8p3zcSJI/929r9RZZeuQABHmUdKNe', 'NICHOLAS', 'CHARTRAND', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('DanielS', '$2b$12$t7KLgUs3kLyrHpykzn58ZODtAwJqYtYqKkZZBDRzgyfHsm3DDxQS6', 'DANIEL', 'SAVOIE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('FrancisC', '$2b$12$GsgpFJxgcWyQxP.YNzCKG.L1QPTBKwaLIUy4lodM6zkymE6v18eo.', 'FRANCIS', 'CHARBONNEAU', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('SimonL', '$2b$12$xpnG74u5kahNrHu6449wu.q3uBDz15VGbik0hoBed4zRCtzouOYj2', 'SIMON', 'LANDREVILLE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('BeryM', '$2b$12$zas2tthe5FQ8sY1EMnr4BOHwvthVpIK6B/t1A4e.8kj66gx2mT5WK', 'BERY', 'MEDIKA', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('MartinL', '$2b$12$zbaagiBSdDyjAJ3CSacg1e0LzcL6SJBonli5W7l94.SagV1wNq6By', 'MARTIN', 'LEGARE', DATE('now'), True, 0);
+
+
+
 
 drop table if exists ProvincialTaxRates;
 CREATE TABLE ProvincialTaxRates (
