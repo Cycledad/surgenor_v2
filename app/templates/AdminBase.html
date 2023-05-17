@@ -81,6 +81,7 @@
                             </a>
                             <ul class="dropdown-menu">
                               <li><a class="dropdown-item" href="{{url_for('manageUser')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                              <li><a class="dropdown-item" href="{{url_for('resetUserPassword')}}">{% if 'resetPW' in session %} {{ session['resetPW'] }} {% else %} Reset User Password {% endif %}</a></li>
                             </ul>
                     </li>
                     <li class="nav-item dropdown">

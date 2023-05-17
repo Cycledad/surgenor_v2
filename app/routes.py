@@ -23,7 +23,6 @@ def home():
         if 'lang' not in session:
             utilities.createSessionObjects('', session)
 
-
     except Exception as e:
         print(f'problem in home: {e}')
 
@@ -55,7 +54,6 @@ def addPurchaser():
             parms = (username, deptId, active,)
             utilities.insertPurchaser(parms)
 
-
     except Exception as e:
         print(f'problem in addPurchaser: {e}')
 
@@ -77,7 +75,6 @@ def addDepartment():
             # dateCreated = dt.date.today() - now set as default in db
             parms = (deptName, active,)
             utilities.insertDepartment(parms)
-
 
     except Exception as e:
         print(f'problem in addDepartment: {e}')
@@ -196,6 +193,7 @@ def addOrder():
     #                       listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
     #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
 
+
 @app.route('/addPart', methods=['GET', 'POST'])
 def addPart():
     try:
@@ -221,7 +219,6 @@ def addPart():
 
             params = (req['partNbr'], req['partDesc'], supplierId, req['partQuantity'], inStock, dtCreated)
             utilities.insertPart(params)
-
 
     except Exception as e:
         print(f'problem in addPart: {e}')
@@ -250,6 +247,54 @@ def adminHome():
         print(f'problem in adminHome: {e}')
 
     return render_template('AdminBase.html')
+
+@app.route('/resetUserPassword', methods=['GET', 'POST'])
+def resetUserPassword():
+    try:
+        # if already logged in
+        #if not session.get('loggedOn', None) is None:
+        #    flash(session['alreadyLoggedIn'], 'info')
+        #    return redirect(url_for('home'))
+
+        if request.method == 'POST':
+            req = request.form
+            username = req['username']
+            pw = req['password']
+            #registered = utilities.getUserRegistered(username)
+            result = utilities.getUser(username)
+            if result is None:
+                registered = False
+            else:
+                registered = result[6]
+            if not registered:
+                flash('username not registered or is not active', 'danger')
+                return redirect(url_for('resetUserPassword'))
+            else:
+                hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
+                #hashed_pw = utilities.getPassword(username)
+                # TO COMPARE PASSWORD FOR VALIDITY
+                pw_check = bcrypt.check_password_hash(hashed_pw, pw)
+                if not pw_check:
+                    flash('password not valid', 'danger')
+                    return redirect(url_for('resetUserPassword'))
+                else:
+                    # session['loggedOn'] = True
+                    # session['securityLevel'] = utilities.getUserSecurityLevel(username)
+                    # session['lang'] = 'en-us'  # english is default language
+                    # session['username'] = username
+                    # utilities.createSessionObjects('fr', session) #send 'fr' so that 'en' lang is loaded ... yeah I know .... wtf ...
+                    success = utilities.updateUserPassword(username, hashed_pw)
+                    if success:
+                        flash('Password Updated!', 'success')
+                    else:
+                        flash('Problem updating password, check err log', 'danger')
+
+                    return redirect(url_for('resetUserPassword'))
+
+    except Exception as e:
+        print(f'problem in resetUserPassword: {e}')
+
+    return render_template('resetUserPassword.html')  # passed user and password validation
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -384,7 +429,6 @@ def manageDepartment():
             flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
-
     except Exception as e:
         print(f'problem in manageDepartment: {e}')
 
@@ -446,7 +490,6 @@ def manageParts():
         if session['securityLevel'] < constants.GOD_LEVEL:
             flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
-
 
     except Exception as e:
         print(f'problem in manageParts: {e}')
@@ -535,10 +578,8 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         alist = (row[0], row[1], purchaserName, row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
             row[13], row[14], row[15], row[16], row[17])
 
-
         #alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
         #    row[13], row[14], row[15], row[16], row[17])
-
 
         d1 = dict(enumerate(alist))
         mylist.append(d1)
@@ -872,7 +913,6 @@ def viewDoc():
         import glob
         theList = []
 
-
         if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
@@ -909,8 +949,6 @@ def viewDoc():
             # fname = req['selFile']
             fname = request.form.get('selFile', '')
 
-
-
             if len(docList) == 0:
                 return render_template('viewDoc.html', docList=['no files found'])
             elif fname == '':
@@ -921,13 +959,10 @@ def viewDoc():
                 utilities.addDocToDeleteQueue(fname)
                 return send_from_directory(constants.DOC_DIRECTORY, fname, as_attachment=True)
 
-
         if len(docList) < 1:
             return render_template('viewDoc.html', docList=['no files found'])
 
         return render_template('viewDoc.html', docList=theList)
-
-
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')
@@ -936,6 +971,7 @@ def viewDoc():
 # no longer used as per Kevin Fri Feb 17, 2023
 @app.route('/stats', methods=['GET'])
 def stats():
+    # not used
     try:
         activeDepts: list = []
         inActiveDepts: list = []
@@ -1037,6 +1073,7 @@ def getLanguage() -> str:
 
     except Exception as e:
         print(f'problem in getLanguage: {e}')
+        
 
 def getUserRegistered(username: str) -> bool:
     try:
