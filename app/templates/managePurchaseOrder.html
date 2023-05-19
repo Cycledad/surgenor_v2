@@ -95,7 +95,7 @@ var updateOrderQuantity = (cell) =>
     var rowData = row.getData();
     let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
     let id = rowData["1"];
-    let orderQuantity = rowData[9];
+    let orderQuantity = rowData[8];
     if (isNaN(orderQuantity)) {
         if (lang == 'en-us') {
             msg = "Not a number!!";
@@ -124,6 +124,8 @@ var updateOrderQuantity = (cell) =>
 
 var updateReceivedBy = (cell) =>
 {
+
+    //alert("update received by");
     //debugger;
     var row = cell.getRow();
     var rowData = row.getData();

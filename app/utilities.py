@@ -646,11 +646,11 @@ def getALLPurchasers() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'select givenName, surname from purchaser where purchaserActive is True'
+        stmt = 'select username from purchaser where purchaserActive'
         cur.execute(stmt)
         row = cur.fetchall()
         for r in row:
-            myList.append(r[0] + ' ' + r[1])
+            myList.append(r[0])
         cur.close()
         conn.close()
 

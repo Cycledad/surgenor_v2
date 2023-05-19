@@ -281,6 +281,7 @@ insert into user (username, password, givenName, surname, createDate, active, se
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('SimonL', '$2b$12$xpnG74u5kahNrHu6449wu.q3uBDz15VGbik0hoBed4zRCtzouOYj2', 'SIMON', 'LANDREVILLE', DATE('now'), True, 0);
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('BeryM', '$2b$12$zas2tthe5FQ8sY1EMnr4BOHwvthVpIK6B/t1A4e.8kj66gx2mT5WK', 'BERY', 'MEDIKA', DATE('now'), True, 0);
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('MartinL', '$2b$12$zbaagiBSdDyjAJ3CSacg1e0LzcL6SJBonli5W7l94.SagV1wNq6By', 'MARTIN', 'LEGARE', DATE('now'), True, 0);
+insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('BenjaminB', '$2b$12$HX9oxlh6Qdvprm/PQffl.eLSrrDI.0qTam0.sEfWuB9O5oyqB6Sz2', 'BENJAMIN', 'BONIN', DATE('now'), True, 0);
 
 
 
