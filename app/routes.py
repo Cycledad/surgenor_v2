@@ -255,6 +255,7 @@ def resetUserPassword():
         #if not session.get('loggedOn', None) is None:
         #    flash(session['alreadyLoggedIn'], 'info')
         #    return redirect(url_for('home'))
+        username = ''
 
         if request.method == 'POST':
             req = request.form
@@ -268,7 +269,7 @@ def resetUserPassword():
                 registered = result[6]
             if not registered:
                 flash('username not registered or is not active', 'danger')
-                return redirect(url_for('resetUserPassword'))
+                #return redirect(url_for('resetUserPassword'))
             else:
                 hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
                 #hashed_pw = utilities.getPassword(username)
@@ -276,7 +277,7 @@ def resetUserPassword():
                 pw_check = bcrypt.check_password_hash(hashed_pw, pw)
                 if not pw_check:
                     flash('password not valid', 'danger')
-                    return redirect(url_for('resetUserPassword'))
+                    #return redirect(url_for('resetUserPassword'))
                 else:
                     # session['loggedOn'] = True
                     # session['securityLevel'] = utilities.getUserSecurityLevel(username)
@@ -289,12 +290,15 @@ def resetUserPassword():
                     else:
                         flash('Problem updating password, check err log', 'danger')
 
-                    return redirect(url_for('resetUserPassword'))
+                    #return redirect(url_for('resetUserPassword'))
 
     except Exception as e:
         print(f'problem in resetUserPassword: {e}')
 
-    return render_template('resetUserPassword.html')  # passed user and password validation
+    #send username as a parm so that entered username remains in input textbox after submission
+    return render_template('resetUserPassword.html', username=username)  # passed user and password validation
+
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
