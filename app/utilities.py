@@ -173,6 +173,12 @@ def updatePurchaser(id: int, givenName: str, surname: str, purchaserDeptId: int,
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
+
+        if purchaserDateInActive == '1':
+            purchaserDateInActive = ''
+        else:
+            purchaserDateInActive = datetime.date.today()
+
         parms = (givenName, surname, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
         stmt = 'update Purchaser set givenName = ?, surname = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
         cur.execute(stmt, parms)
@@ -263,13 +269,19 @@ def updatePurchaseOrderTable(id: int, purchaseOrderDate: str, purchaseOrderRecei
     except Exception as e:
         print(f'problem in updatePurchaseOrderTable: {e}')
 
-def updateUser(id: int, givenName: str, surname: str, username: str, password: str, createDate: str, active: bool, dateInactive: str,
-               securityLevel: int) -> None:
+def updateUser(id: int, givenName: str, surname: str, username: str, password: str, createDate: str, active: str,
+               dateInactive: str, securityLevel: int) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
+
+        if active == '1':
+            dateInactive = ''
+        else:
+            dateInactive = datetime.date.today()
+
         parms = (givenName, surname, username, password, createDate, active, dateInactive, securityLevel, id,)
         stmt = 'update User set givenName = ?, surname = ?, username = ?, password = ?, createDate = ?, active = ?, dateInactive = ?, securityLevel = ? where id = ?'
         cur.execute(stmt, parms)
@@ -500,6 +512,12 @@ def updateDepartment(id: int, dept: str, dateCreated: str, active: bool, dateInA
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
+
+        if active == '1':
+            dateInActive = ''
+        else:
+            dateInActive = datetime.date.today()
+
         parms = (dept, dateCreated, active, dateInActive, id,)
         stmt = 'update Department set deptName = ?, dateCreated = ?, active = ?, dateInActive = ? where id = ?'
         cur.execute(stmt, parms)
@@ -1767,3 +1785,5 @@ def deletePreviousPrintedFiles() -> None:
         print(f'problem in deletePreviousPrintedFiles: {e}')
 
     return
+
+
