@@ -45,13 +45,13 @@ var updateCol = (cell) =>
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData[0];
-	givenName = rowData[1];
-	surname = rowData[2];
-	purchaserDeptId = rowData[3];
-	purchaserActive = rowData[4];
-	purchaserDateInActive = rowData[5];
-	purchaserDateCreated = rowData[6];
-    value = id + "," + username + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated
+	username = rowData[1];
+	purchaserDeptId = rowData[2];
+	purchaserActive = rowData[3];
+	purchaserDateInActive = rowData[4];
+	purchaserDateCreated = rowData[5];
+
+    value = id + "," + username + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated;
     URL = "/api/data/managePurchaser?action=update&value=" + value;
     table.setData(URL);
 };

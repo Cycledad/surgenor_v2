@@ -166,7 +166,7 @@ def getPartId(Desc: str) -> int:
         print(f'problem in getPartId: {e}')
 
 
-def updatePurchaser(id: int, givenName: str, surname: str, purchaserDeptId: int, purchaserActive: bool,
+def updatePurchaser(id: int, username: str, purchaserDeptId: int, purchaserActive: bool,
                     purchaserDateInActive: str, purchaserDateCreated: str) -> None:
     try:
         # soft delete
@@ -174,13 +174,13 @@ def updatePurchaser(id: int, givenName: str, surname: str, purchaserDeptId: int,
         conn = getConnection(db)
         cur = conn.cursor()
 
-        if purchaserDateInActive == '1':
+        if purchaserActive == '1':
             purchaserDateInActive = ''
         else:
             purchaserDateInActive = datetime.date.today()
 
-        parms = (givenName, surname, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
-        stmt = 'update Purchaser set givenName = ?, surname = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
+        parms = (username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
+        stmt = 'update Purchaser set username = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
