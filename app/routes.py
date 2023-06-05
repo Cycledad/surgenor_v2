@@ -26,6 +26,7 @@ def home():
     except Exception as e:
         print(f'problem in home: {e}')
 
+ 
     return render_template('home.html')
 
 
@@ -123,6 +124,11 @@ def addOrder():
             # 1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
             purchaserName = resultList[1]
+            if purchaserName == 'None':
+                #flash(session['invalidPurchaser'], 'warning')
+                flash(session['invalidPurchaser'], 'danger')
+                raise Exception(f'User {purchaserName} is not authorized to purchase')
+
             purchaserId = utilities.getPurchaserId(session['username'])
             purchaserDeptId = utilities.getPurchaserDeptId(session['username'])
             utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptId)
@@ -167,6 +173,7 @@ def addOrder():
 
     except Exception as e:
         print(f'problem in addOrder: {e}')
+
 
     orderNbr = utilities.getMaxOrderNbr() #Kevin asks that po number start at 1000
     if orderNbr < 1000:
@@ -764,8 +771,7 @@ def apimanagePurchaser():
         purchaserDateInActive = myList[4]
         purchaserDateCreated = myList[5]
 
-        utilities.updatePurchaser(id, username, purchaserDeptId, purchaserActive, purchaserDateInActive,
-                                  purchaserDateCreated)
+        utilities.updatePurchaser(id, username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Purchaser')
@@ -859,6 +865,7 @@ def apimanageUser():
         active = myList[6]
         dateInactive = myList[7]
         securityLevel = myList[8]
+
 
         utilities.updateUser(id, givenName, surname, username, password, createDate, active, dateInactive, securityLevel)
 

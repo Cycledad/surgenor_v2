@@ -688,7 +688,7 @@ def getPurchaser(username: str) -> str:
             conn = getConnection(db)
             cur = conn.cursor()
             parm = (username,)
-            stmt = 'select u.givenName, u.surname from user u, purchaser p where p.purchaserActive is True and u.username = p.username and u.username = ?'
+            stmt = 'select u.givenName, u.surname from user u, purchaser p where p.purchaserActive and u.active and u.username = p.username and u.username = ?'
             cur.execute(stmt, parm)
             row = cur.fetchone()
             if row is None:
@@ -809,18 +809,20 @@ def insertOrder(parms) -> None:
         PO = supplierName + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
         #PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}') + '_' + str(maxOrderId)
 
-        orderNbr = parms[0]
-        stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {orderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
+        #orderNbr = parms[0]
+        #stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {orderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
         #stmt = 'select a.deptName from department a, ordertbl b, purchaseorder c where purchaseOrderNbr = b.ordernbr and c.purchaseOrderPurchaserDeptId = a.id and a.active is True'
+        orderUsername = parms[5]
+        stmt = f'select d.deptName from Department d, Purchaser p where p.username = "{orderUsername}" and p.purchaseractive and d.active and p.purchaserDeptId = d.id'
         cur.execute(stmt)
         deptName = cur.fetchone()
         deptName = deptName[0]
 
-        #OrderNbr = parms[0]
+        orderNbr = parms[0]
         #orderPartNbr = parms[1]
         orderDesc = parms[1]
         orderSupplierId = supplierId
-        orderQuantity= parms[3]
+        orderQuantity = parms[3]
         orderPartPrice = parms[4]
         #orderTotalCost = parms[5]
         orderUsername = parms[5]
@@ -1614,6 +1616,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             # ----- purchase order table -----
             session['purchaseOrderDate'] = "Date de commande d'achat"
             session['purchaseOrderTable'] = "Tableau de commande d'achat"
+            session['invalidPurchaser'] = "L'utilisateur n'est pas un acheteur"
         else:
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Home'
@@ -1678,6 +1681,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             # ----- purchase order table -----
             session['purchaseOrderDate'] = 'Purchase Order Date'
             session['purchaseOrderTable'] = 'Purchase Order Table'
+            session['invalidPurchaser'] = 'User is not a purchaser'
 
         return currentLang
 
