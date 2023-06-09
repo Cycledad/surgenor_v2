@@ -7,9 +7,12 @@ from flask import render_template, request, redirect, url_for, flash, session
 from app import app, bcrypt, constants
 from app import utilities
 
+#my logging info will be written to => wayneraid.pythonanywhere.com.error.log and wayneraid.pythonanywhere.com.server.log
+import logging
+logging.basicConfig(encoding='utf-8', format='%(levelname)s:%(asctime)s - - %(message)s -:', level=logging.DEBUG)
+import traceback
 
 # from app import models
-
 
 @app.route('/home')
 def home():
@@ -25,7 +28,6 @@ def home():
 
     except Exception as e:
         print(f'problem in home: {e}')
-
  
     return render_template('home.html')
 
@@ -924,6 +926,8 @@ def viewDoc():
         import glob
         theList = []
 
+        logging.warning(f'debug logged - routes viewDoc.')
+
         if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
@@ -945,8 +949,6 @@ def viewDoc():
             #print(f'viewdoc post - req is: {req}')
             # executing LOCALLY
 
-
-
             # executing on SERVER
             # directory = '/home/wayneraid/surgenor/app/'
 
@@ -958,7 +960,9 @@ def viewDoc():
             # os.chmod(filePathName, stat.S_IRWXO )
 
             # fname = req['selFile']
+
             fname = request.form.get('selFile', '')
+            logging.warning(f'debug logged - routes.viewDoc - fname => {fname}')
 
             if len(docList) == 0:
                 return render_template('viewDoc.html', docList=['no files found'])
@@ -977,6 +981,8 @@ def viewDoc():
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')
+        tb = traceback.format_exc()
+        logging.warning(f'debug logged - routes.viewDoc - traceback => {tb}.')
 
 
 # no longer used as per Kevin Fri Feb 17, 2023
@@ -1044,6 +1050,7 @@ def stats():
                                inActivePurchasers=inActivePurchasers, activeSuppliers=activeSuppliers,
                                inActiveSuppliers=inActiveSuppliers,
                                activeUsers=activeUsers, inActiveUsers=inActiveUsers)
+
     except Exception as e:
         print(f'problem in stats: {e}')
 

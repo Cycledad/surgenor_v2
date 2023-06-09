@@ -22,6 +22,9 @@ from docxtpl import DocxTemplate
 
 from app import app, constants
 
+import traceback
+import logging
+logging.basicConfig(encoding='utf-8', format='%(levelname)s:%(asctime)s - - %(message)s -:', level=logging.DEBUG)
 
 def getDatabase(dataBaseName: str) -> str:
     return os.path.join(app.root_path, dataBaseName)
@@ -993,7 +996,7 @@ def updateOrderReceivedDate(id: int, dt_order_received: str, dt_order_returned: 
         print(f'problem in updateOrderReceivedDate: {e}')
 
 
-def updateOrderQuantity(id: int, quantity: int, colName:str) -> None:
+def updateOrderQuantity(id: int, quantity: int, colName: str) -> None:
     # There is ONE purchaseOrder id used to track orders.
     # there can be MANY orders per purchaseOrder
     try:
@@ -1766,19 +1769,26 @@ def printDoc():
 
 def addDocToDeleteQueue(fname: str) -> None:
     try:
+        logging.warning(f'debug logged - utilities.addDocToDeleteQueue - fname => {fname}.')
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "a") as deleteQueue:
             deleteQueue.write(fname)
 
     except Exception as e:
         print(f'problem in addDocToDeleteQueue: {e}')
+        tb = traceback.format_exc()
+        logging.warning(f'debug logged - utilities.addDocToDeleteQueue - traceback => {tb}.')
 
     return
 
 
 def deletePreviousPrintedFiles() -> None:
     try:
+
+        logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles.')
+
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
             for fname in deleteQueue:
+                logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles - deleting => {fname}.')
                 os.remove(constants.DOC_DIRECTORY + fname)
 
         # once all *.docx file have been deleted, delete the deleteQueue.txt file
@@ -1787,6 +1797,8 @@ def deletePreviousPrintedFiles() -> None:
 
     except Exception as e:
         print(f'problem in deletePreviousPrintedFiles: {e}')
+        tb = traceback.format_exc()
+        logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles - traceback => {tb}.')
 
     return
 
