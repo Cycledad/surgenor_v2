@@ -7,12 +7,10 @@ from flask import render_template, request, redirect, url_for, flash, session
 from app import app, bcrypt, constants
 from app import utilities
 
-#my logging info will be written to => wayneraid.pythonanywhere.com.error.log and wayneraid.pythonanywhere.com.server.log
-import logging
-logging.basicConfig(encoding='utf-8', format='%(levelname)s:%(asctime)s - - %(message)s -:', level=logging.DEBUG)
 import traceback
 
 # from app import models
+
 
 @app.route('/home')
 def home():
@@ -840,7 +838,7 @@ def apimanageProvincialTaxRates():
         return x
 
     except Exception as e:
-        print(f'problem in manageProvincialTaxRates: {e}')
+        print(f"problem in manageProvincialTaxRates: {e}.  User => {session['username']}")
 
 
 @app.route('/api/data/manageUser/<action>/<value>', methods=['GET'])
@@ -867,7 +865,6 @@ def apimanageUser():
         active = myList[6]
         dateInactive = myList[7]
         securityLevel = myList[8]
-
 
         utilities.updateUser(id, givenName, surname, username, password, createDate, active, dateInactive, securityLevel)
 
@@ -896,7 +893,7 @@ def manageProvincialTaxRates():
             return redirect(url_for('adminHome'))
 
     except Exception as e:
-        print(f'problem in manageProvincialTaxRates: {e}')
+        print(f"problem in manageProvincialTaxRates: {e}.  User => {session['username']}")
 
     return render_template('manageProvincialTaxRates.html')
 
@@ -914,7 +911,7 @@ def manageUser():
             return redirect(url_for('adminHome'))
 
     except Exception as e:
-        print(f'problem in manageUser: {e}')
+        print(f"problem in manageUser: {e}.  User => {session['username']}")
 
     return render_template('manageUser.html')
 
@@ -926,7 +923,7 @@ def viewDoc():
         import glob
         theList = []
 
-        logging.warning(f'debug logged - routes viewDoc.')
+        utilities.myLogInfo(funcName='viewDoc', msg=None, myData=None, user=session['username'], tb=None)
 
         if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
@@ -962,27 +959,32 @@ def viewDoc():
             # fname = req['selFile']
 
             fname = request.form.get('selFile', '')
-            logging.warning(f'debug logged - routes.viewDoc - fname => {fname}')
+            utilities.myLogInfo(funcName='viewDoc', msg='post - fname', myData=fname, user=session['username'], tb=None)
 
             if len(docList) == 0:
+                utilities.myLogInfo(funcName='viewDoc', msg=' post - len(docList) == 0', myData=docList, user=session['username'], tb=None)
                 return render_template('viewDoc.html', docList=['no files found'])
             elif fname == '':
+                utilities.myLogInfo(funcName='viewDoc', msg='post - happens when submit button is pressed with no selection', myData=fname,
+                                    user=session['username'], tb=None)
                 # this happens when submit button is pressed with no selection
                 return render_template('viewDoc.html', docList=theList)
             else:
-                utilities.deletePreviousPrintedFiles()
+                utilities.myLogInfo(funcName='viewDoc', msg='post - just before call to addDocToDeleteQueue',
+                                    myData=fname,
+                                    user=session['username'], tb=None)
                 utilities.addDocToDeleteQueue(fname)
                 return send_from_directory(constants.DOC_DIRECTORY, fname, as_attachment=True)
 
         if len(docList) < 1:
+            utilities.myLogInfo(funcName='viewDoc', msg='len(docList) < 1', myData=docList, user=session['username'], tb=None)
             return render_template('viewDoc.html', docList=['no files found'])
 
         return render_template('viewDoc.html', docList=theList)
 
     except Exception as e:
-        print(f'problem in viewDoc: {e}')
-        tb = traceback.format_exc()
-        logging.warning(f'debug logged - routes.viewDoc - traceback => {tb}.')
+        utilities.myLogInfo(funcName='viewDoc', msg='problem in viewDoc', myData=None, user=session['username'], tb=traceback.format_exc())
+
 
 
 # no longer used as per Kevin Fri Feb 17, 2023

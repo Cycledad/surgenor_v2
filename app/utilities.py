@@ -23,8 +23,6 @@ from docxtpl import DocxTemplate
 from app import app, constants
 
 import traceback
-import logging
-logging.basicConfig(encoding='utf-8', format='%(levelname)s:%(asctime)s - - %(message)s -:', level=logging.DEBUG)
 
 def getDatabase(dataBaseName: str) -> str:
     return os.path.join(app.root_path, dataBaseName)
@@ -695,7 +693,7 @@ def getPurchaser(username: str) -> str:
             cur.execute(stmt, parm)
             row = cur.fetchone()
             if row is None:
-                raise Exception
+                raise Exception(f'check database activeFlag for {username} in table purchaser.')
 
             #for r in row:
             #myList.append(r[0] + ' ' + r[1])
@@ -708,6 +706,7 @@ def getPurchaser(username: str) -> str:
 
         except Exception as e:
             print(f'problem in getPurchaser: {e}')
+            myLogInfo(funcName='getPurchaser', msg='problem in getPurchaser', myData=e, user=None, tb=traceback.format_exc())
 
 
 def getALLITEMS(tblName: str, colName: str) -> list:
@@ -1746,6 +1745,9 @@ def printDoc():
     except Exception as e:
         print(f'problem in printDoc: {e}')
 
+    finally:
+        return
+
 
 '''
         for i in range(len(docList)):
@@ -1769,14 +1771,12 @@ def printDoc():
 
 def addDocToDeleteQueue(fname: str) -> None:
     try:
-        logging.warning(f'debug logged - utilities.addDocToDeleteQueue - fname => {fname}.')
+        myLogInfo(funcName='addDocToDeleteQueue', msg=fname, myData=fname, user=None, tb=None)
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "a") as deleteQueue:
             deleteQueue.write(fname)
 
     except Exception as e:
-        print(f'problem in addDocToDeleteQueue: {e}')
-        tb = traceback.format_exc()
-        logging.warning(f'debug logged - utilities.addDocToDeleteQueue - traceback => {tb}.')
+        myLogInfo('addDocToDeleteQueue', 'problem in addDocToDeleteQueue', e, None, traceback.format_exc())
 
     return
 
@@ -1784,11 +1784,11 @@ def addDocToDeleteQueue(fname: str) -> None:
 def deletePreviousPrintedFiles() -> None:
     try:
 
-        logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles.')
+        myLogInfo(funcName='deletePreviousPrintedFiles', msg=None, myData=None, user=None, tb=None)
 
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
             for fname in deleteQueue:
-                logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles - deleting => {fname}.')
+                myLogInfo(funcName='deletePreviousPrintedFiles', msg=fname, myData=fname, user=None, tb=None)
                 os.remove(constants.DOC_DIRECTORY + fname)
 
         # once all *.docx file have been deleted, delete the deleteQueue.txt file
@@ -1796,10 +1796,34 @@ def deletePreviousPrintedFiles() -> None:
         os.remove(constants.DOC_DIRECTORY + "deleteQueue.txt")
 
     except Exception as e:
-        print(f'problem in deletePreviousPrintedFiles: {e}')
-        tb = traceback.format_exc()
-        logging.warning(f'debug logged - utilities.deletePreviousPrintedFiles - traceback => {tb}.')
+        myLogInfo(funcName='deletePreviousPrintedFiles', msg='problem in deletePreviousPrintedFiles', myData=e, user=None, tb=traceback.format_exc())
 
     return
+
+
+def myLogInfo(funcName: str, msg: str = None, myData=None, user: str = None, tb: str = None) -> None:
+
+    '''
+    parms - all parameters are optional except for funcName
+    funcName: calling function
+    msg: message to be printed
+    myData: data to be printed via f string {}
+    user: user, doesn't seem to be defined within utilities module???
+    tb: traceback information
+
+    my logging info will be written to => wayneraid.pythonanywhere.com.error.log and wayneraid.pythonanywhere.com.server.log
+    '''
+
+    try:
+        #myDate = datetime.date.today() # format is: yyyy-MM-dd
+        myDate = datetime.datetime.now()
+        print(f">>> myLogInfo: {myDate} -- funcName => {funcName}. Msg => {msg}. myData => {myData}. User => {user}. Traceback => {tb}.")
+
+    except Exception as e:
+        print(f'problem in myLogInfo: {e}. Called by => {funcName}')
+
+    finally:
+        return
+
 
 
