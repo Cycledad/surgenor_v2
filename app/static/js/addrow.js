@@ -2,7 +2,7 @@ $(document).ready(function ()
 {
 
 //re-worked with Nathan's help. Increased the length of part desc input as per kevin.
-debugger;
+//debugger;
     var counter = 0;
 
     $("#addrow").on("click", function ()
@@ -13,7 +13,7 @@ debugger;
 
         var selectSupplier = '';
         selectSupplier = '<div class="col-2"><div class="input-group mb-3"><select name="selectSupplier' + counter + '" data-supplier class=\'form-control\' id="selectSupplier' + counter + '" required>';
-        debugger;
+        //debugger;
         if (document.getElementById("lang").innerHTML == 'en-us'){
             selectSupplier += '<option value="">-- Supplier --</option>';
         }
