@@ -1,37 +1,38 @@
 
  var editor; // use a global for the submit and return data rendering in the examples
 
-$(document).ready(function() {
-    editor = new $.fn.dataTable.Editor( {
-        "ajax": '/api/data',
-        "table": "#data",
-        "fields": [
-                {"label": "x",
-                 "name": '0'
-                },
-                {"label": "x",
-                 "name": '1'
-                },
-                {"label": "x",
-                 "name": '2'
-                },
-                {"label": "x",
-                 "name": '3'
-                },
-                {"label": "x",
-                 "name": '4'
-                },
-                {"label": "x",
-                 "name": '5'
-                },
-                {"label": "x",
-                 "name": '6'
-                },
-                {"label": "x",
-                 "name": '7'
-            }
-        ]
-    } );
+$(document).ready(function() {})
+    //editor = new $.fn.dataTable.Editor( {
+    //    "ajax": '/api/data',
+    //    "table": "#data",
+        //"table": "#data",
+        //"fields": [
+        //        {"label": "x",
+        //         "name": '0'
+        //        },
+        //        {"label": "x",
+        //         "name": '1'
+        //        },
+        //        {"label": "x",
+        //         "name": '2'
+        //        },
+        //        {"label": "x",
+        //         "name": '3'
+        //        },
+        //        {"label": "x",
+        //         "name": '4'
+        //        },
+        //        {"label": "x",
+        //         "name": '5'
+        //        },
+        //        {"label": "x",
+        //         "name": '6'
+        //        },
+        //        {"label": "x",
+        //         "name": '7'
+        //    }
+        //]
+    //} );
 
     // Edit record
     $('#data').on('click', 'td.editor-edit', function (e) {
@@ -57,17 +58,17 @@ $(document).ready(function() {
 
 
 
-      $('#data').DataTable({
-        ajax: '/api/data',
-        columns: [
-          {data: '0'},
-          {data: '1'},
-          {data: '2'},
-          {data: '3'},
-          {data: '4'},
-          {data: '5'},
-          {data: '6'},
-          {data: '7'}
-          ],
-          });
-    });
+    //  $('#data').DataTable({
+    //    ajax: '/api/data',
+    //    columns: [
+    //      {data: '0'},
+    //      {data: '1'},
+    //      {data: '2'},
+    //      {data: '3'},
+    //      {data: '4'},
+    //      {data: '5'},
+    //      {data: '6'},
+    //      {data: '7'}
+    //      ],
+    //      });
+    //});
