@@ -1087,7 +1087,7 @@ def getPurchaserName():
 def getLanguage() -> str:
     try:
         lang = session['lang']
-        l = json.dumps(lang)
+        #lang = json.dumps(lang)
 
         return lang
 
