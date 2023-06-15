@@ -1789,7 +1789,11 @@ def deletePreviousPrintedFiles() -> None:
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
             for fname in deleteQueue:
                 myLogInfo(funcName='deletePreviousPrintedFiles', msg=fname, myData=fname, user=None, tb=None)
-                os.remove(constants.DOC_DIRECTORY + fname)
+                myList = fname.split('.docx')
+                for i in range(0, len(myList) - 1):
+                    myLogInfo(funcName='deletePreviousPrintedFiles - for loop', msg=myList[i], myData=None, user=None, tb=None)
+                    os.remove(constants.DOC_DIRECTORY + myList[i] + '.docx')
+                break
 
         # once all *.docx file have been deleted, delete the deleteQueue.txt file
         # in preparation of appending new *.docx files
