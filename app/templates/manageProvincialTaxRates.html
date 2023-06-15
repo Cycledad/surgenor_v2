@@ -81,7 +81,7 @@ var table = new Tabulator("#manageProvincialTaxRates-table",
                 "columns":{
                     "1" : "code de la province",                //provinceCode
                     "2" : "taux d'imposition",                  //taxRate
-                    "3" : "label1",                             //label1
+                    "3" : "taux de taxe de vente",              //sales tax rate
                     "4" : "actif",                              //active
                 },
                  "pagination":{
@@ -117,9 +117,9 @@ var table = new Tabulator("#manageProvincialTaxRates-table",
     ],
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
-        {title:"provinceCode", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Provincial Code ..."},
-        {title:"taxRate", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate ..."},
-        {title:"label1", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate Label ..."},
+        {title:"Province Code", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Provincial Code ..."},
+        {title:"Tax Rate", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate ..."},
+        {title:"Sales Tax Rate", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Tax Rate Label ..."},
         {title:"active", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active indicator ..."},
 
     ],

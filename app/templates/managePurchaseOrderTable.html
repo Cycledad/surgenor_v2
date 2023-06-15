@@ -63,7 +63,7 @@ var printIcon = function(cell, formatterParams, onrendered){
     return "<img src=./static/img/printer-16.png>";
 };
 
-
+debugger;
 //Build Tabulator
 var table = new Tabulator("#managePurchaseOrderTable",
 {
@@ -71,8 +71,8 @@ var table = new Tabulator("#managePurchaseOrderTable",
     ajaxURL: "/api/data/managePurchaseOrderTable",
     //height:"511px",
     height:"650px",
-    //layout:"fitData",
-    layout:"fitColumns",
+    layout:"fitData",
+    //layout:"fitColumns",
     selectable:true,
     placeholder:"No Data Set",
     pagination:"local",
@@ -84,7 +84,7 @@ var table = new Tabulator("#managePurchaseOrderTable",
     paginationCounter:"rows",
     locale: true,
     langs:{
-        "fr":{ //French language definition - keep these in sync with utilities.py
+        "fr-ca":{ //French language definition - keep these in sync with utilities.py
                //no need to define english, en, as it is default and title values will be used
                //translations done here: https://imtranslator.net/translation/english/to-french/translation/
                 "columns":{
@@ -166,9 +166,9 @@ table.on('tableBuilt', function(){
     {
         if (this.readyState == 4 && this.status == 200)
         {
-            //alert(this.responseText);
+            alert(this.responseText);
             lang = this.responseText;
-            //debugger;
+            debugger;
             table.setLocale(lang);
         }
     }
