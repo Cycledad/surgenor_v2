@@ -55,7 +55,7 @@ var updateReturnQuantity = (cell) =>
         } else {
             msg = "La quantité ne peut pas être inférieure à 0!";
         }
-        alert(msg);
+        //alert(msg);
     } else {
         if (isNaN(returnQuantity)) {
             if (lang == 'en-us') {
@@ -63,7 +63,7 @@ var updateReturnQuantity = (cell) =>
             } else {
                 msg = "Pas un numéro !!";
             }
-            alert(msg);
+            //alert(msg);
         }
         else {
             let quantityOrdered = rowData[8];
@@ -76,7 +76,7 @@ var updateReturnQuantity = (cell) =>
                     msg = "La quantité retournée ne peut excéder la quantité commandée !";
                 }
 
-                alert(msg);
+                //alert(msg);
             }
             else {
                 let value = id + "," + returnQuantity
@@ -102,7 +102,7 @@ var updateOrderQuantity = (cell) =>
         } else {
             msg = "Pas un numéro !!";
         }
-        alert(msg);
+        //alert(msg);
     }
     else {
         if (orderQuantity < 1) {
@@ -112,7 +112,7 @@ var updateOrderQuantity = (cell) =>
             else {
                 msg = "La quantité de commande ne peut pas être inférieure à 1!";
             }
-            alert(msg);
+            //alert(msg);
         }
         else {
             value = id + "," + orderQuantity
@@ -159,7 +159,7 @@ var updateActive = (cell) =>
         {
             msg = "Vous devez avoir le niveau de sécurité 5 pour modifier l'indicateur actif de l'ordre";
         }
-        alert(msg);
+        //alert(msg);
          // i need to do this to pull/reset original column data from db
         URL = "/api/data/managePurchaseOrder";
         table.setData(URL);
@@ -250,6 +250,7 @@ var table = new Tabulator("#example-table",
     //height:"500px",
     height:"650px",
     layout:"fitData",
+    //layout:"fitColumns",
     selectable:true,
     placeholder:"No Data Set",
     pagination:"local",
@@ -364,6 +365,7 @@ table.on('tableBuilt', function(){
     {
         if (this.readyState == 4 && this.status == 200)
         {
+            debugger;
             //alert(this.responseText);
             lang = this.responseText;
             //debugger;
