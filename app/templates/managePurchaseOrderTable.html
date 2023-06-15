@@ -63,7 +63,7 @@ var printIcon = function(cell, formatterParams, onrendered){
     return "<img src=./static/img/printer-16.png>";
 };
 
-debugger;
+//debugger;
 //Build Tabulator
 var table = new Tabulator("#managePurchaseOrderTable",
 {
@@ -166,9 +166,9 @@ table.on('tableBuilt', function(){
     {
         if (this.readyState == 4 && this.status == 200)
         {
-            alert(this.responseText);
+            //alert(this.responseText);
             lang = this.responseText;
-            debugger;
+            //debugger;
             table.setLocale(lang);
         }
     }
