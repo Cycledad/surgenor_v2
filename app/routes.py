@@ -170,6 +170,8 @@ def addOrder():
             orderList = utilities.getOrderByOrderNbr(purchaseOrderNbr)
             utilities.createPrintDoc(orderList)
 
+            return render_template('home.html')
+
     except Exception as e:
         print(f'problem in addOrder: {e}')
 
