@@ -225,10 +225,9 @@ INSERT INTO Unit(unitDesc) values('PIECES');
 DROP TABLE IF EXISTS OrderNbrTbl;
 CREATE TABLE OrderNbrTbl (
 	orderNbr INTEGER NOT NULL unique
-
 );
 
---insert into OrderNbrTbl values(0);
+insert into OrderNbrTbl values(1087);
 
 drop table if exists Department;
 CREATE TABLE Department (

@@ -24,6 +24,7 @@ from app import app, constants
 
 import traceback
 
+
 def getDatabase(dataBaseName: str) -> str:
     return os.path.join(app.root_path, dataBaseName)
 
@@ -78,9 +79,10 @@ def getProvincialTaxRate(provincialCode: str) -> list:
 
         return row
 
-
     except Exception as e:
         print(f'problem in getProvincialTaxRate: {e}')
+
+
 def getUnitDesc(id: int) -> str:
     try:
         row: str = ''
@@ -98,7 +100,6 @@ def getUnitDesc(id: int) -> str:
         conn.close()
 
         return row[0]
-
 
     except Exception as e:
         print(f'problem in getUnitDesc: {e}')
@@ -120,7 +121,6 @@ def getUnitId(desc: str) -> int:
 
         return row[0]
 
-
     except Exception as e:
         print(f'problem in getUnitId: {e}')
 
@@ -140,7 +140,6 @@ def getALLUnitDesc() -> list:
         conn.close()
 
         return row
-
 
     except Exception as e:
         print(f'problem in getALLUnitDesc: {e}')
@@ -212,6 +211,7 @@ def updateParts(id: int, partNbr: int, partDesc: str, partSupplierId: int, partQ
     except Exception as e:
         print(f'problem in updateParts: {e}')
 
+
 def updateProvincialTaxRates(parms) -> None:
 
     try:
@@ -230,7 +230,6 @@ def updateProvincialTaxRates(parms) -> None:
         print(f'problem in updateProvincialTaxRates: {e}')
 
 
-
 def updateSupplier(id: int, supplierName: str, supplierProv: str, supplierActive: bool, supplierDateCreated: str) -> None:
     try:
         # soft delete
@@ -246,9 +245,9 @@ def updateSupplier(id: int, supplierName: str, supplierProv: str, supplierActive
 
         return
 
-
     except Exception as e:
         print(f'problem in updateSupplier: {e}')
+
 
 def updatePurchaseOrderTable(id: int, purchaseOrderDate: str, purchaseOrderReceivedDate: str, purchaseOrderActive: bool, purchaseOrderDateDeleted: str,
                              purchaseOrderNbr: int, purchaseOrderPurchaserId: int, purchaseOrderPurchaserDeptId: int) -> None:
@@ -265,7 +264,6 @@ def updatePurchaseOrderTable(id: int, purchaseOrderDate: str, purchaseOrderRecei
         conn.close()
 
         return
-
 
     except Exception as e:
         print(f'problem in updatePurchaseOrderTable: {e}')
@@ -317,8 +315,6 @@ def updateUserPassword(username: str, hashed_pw: str) -> bool:
         result = False
 
         return result
-
-
 
 
 def getSupplierName(id: int) -> str:
@@ -732,32 +728,34 @@ def getALLITEMS(tblName: str, colName: str) -> list:
         print(f'problem in getALLITEMS: {e}')
 
 
-def getMaxOrderNbr() -> int:
+def getOrderNbr() -> int:
     try:
-        result: int = None
+        purchaseOrderNbr: int = 0
+        stmt: str
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = f'select max(purchaseOrderNbr) from purchaseOrder'
+        stmt = f'select OrderNbr from orderNbrTbl'
         cur.execute(stmt)
         row = cur.fetchone()
 
-        maxPurchaseOrderNbr = row[0]
+        purchaseOrderNbr = row[0]
         if row[0] is None:
-            maxPurchaseOrderNbr = 0
+            purchaseOrderNbr = 1000
 
         cur.close()
         conn.close()
 
-        return maxPurchaseOrderNbr
+        return purchaseOrderNbr
 
     except Exception as e:
         print(f'problem in getMaxOrderNbr: {e}')
 
 
-def updateMaxOrderNbr(orderNbr: int):
+def updateOrderNbr(orderNbr: int) -> None:
     try:
+        stmt: str
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -777,7 +775,7 @@ def updateMaxOrderNbr(orderNbr: int):
         return
 
     except Exception as e:
-        print(f'problem in updateMaxOrderNbr: {e}')
+        print(f'problem in updateOrderNbr: {e}')
 
 
 def insertOrder(parms) -> None:
@@ -785,11 +783,7 @@ def insertOrder(parms) -> None:
     #parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, username)
     try:
         #id = {id[0]:0>3} #format left padding w 0 with 3
-
-        maxOrderNbr = getMaxOrderNbr()
-        if maxOrderNbr == 0:
-            pass
-            #raise error
+        stmt: str
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -808,7 +802,7 @@ def insertOrder(parms) -> None:
         # this is used to create the name of the print doc which is stored on the order rec
         maxOrderId = getMaxOrderId() + 1
 
-        PO = supplierName + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
+        #PO = supplierName + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
         #PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}') + '_' + str(maxOrderId)
 
         #orderNbr = parms[0]
@@ -821,6 +815,7 @@ def insertOrder(parms) -> None:
         deptName = deptName[0]
 
         orderNbr = parms[0]
+        PO = supplierName + '_' + dt + '_' + str(f'{orderNbr:0>3}')
         #orderPartNbr = parms[1]
         orderDesc = parms[1]
         orderSupplierId = supplierId

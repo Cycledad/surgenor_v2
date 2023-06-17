@@ -158,15 +158,14 @@ def addOrder():
                 unitPrice = resultList[i]
                 i += 1
 
-                parms = (orderNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
+                # parms = (orderNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
+                parms = (purchaseOrderNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
                 #parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
 
                 # creates order in the orderTbl ... there can be many orders for one purchase order
                 utilities.insertOrder(parms)
 
-            utilities.updateMaxOrderNbr(purchaseOrderNbr)
-
-            # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
+           # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
 
             orderList = utilities.getOrderByOrderNbr(purchaseOrderNbr)
             utilities.createPrintDoc(orderList)
@@ -174,12 +173,17 @@ def addOrder():
     except Exception as e:
         print(f'problem in addOrder: {e}')
 
+    purchaseOrderNbr = utilities.getOrderNbr()
+    purchaseOrderNbr += 1
+    utilities.updateOrderNbr(purchaseOrderNbr)
 
-    orderNbr = utilities.getMaxOrderNbr() #Kevin asks that po number start at 1000
-    if orderNbr < 1000:
-        orderNbr = 1000
-    else:
-        orderNbr += 1
+    # having concurrency issues regarding po nbr so now use code above
+    #
+    # #orderNbr = utilities.getMaxOrderNbr() #Kevin asks that po number start at 1000
+    # if orderNbr < 1000:
+    #    orderNbr = 1000
+    # else:
+    #    orderNbr += 1
 
     purchaserName = utilities.getPurchaser(session['username'])
 
@@ -195,7 +199,10 @@ def addOrder():
     #return render_template('addOrder.html', listPartDesc=listPartDesc, purchaserName=purchaserName, listSupplierNames=listSupplierNames,
     #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
     return render_template('addOrder.html', purchaserName=purchaserName, listSupplierNames=listSupplierNames,
-                           orderNbr=orderNbr, username=session['username'], lang=session['lang'])
+                           orderNbr=purchaseOrderNbr, username=session['username'], lang=session['lang'])
+
+    # return render_template('addOrder.html', purchaserName=purchaserName, listSupplierNames=listSupplierNames,
+    #                       orderNbr=orderNbr, username=session['username'], lang=session['lang'])
     #return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
     #                       listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
     #                       listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
@@ -304,8 +311,6 @@ def resetUserPassword():
 
     #send username as a parm so that entered username remains in input textbox after submission
     return render_template('resetUserPassword.html', username=username)  # passed user and password validation
-
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
