@@ -1779,15 +1779,24 @@ def addDocToDeleteQueue(fname: str) -> None:
 def deletePreviousPrintedFiles() -> None:
     try:
 
+        # I was having problems with this func, mostly files couldn't be found so in the end
+        # I now create myList and then use myLogInfo to files to be deleted but instead
+        # of individually deleting the files I simply delete ALL docx files
+
         myLogInfo(funcName='deletePreviousPrintedFiles', msg=None, myData=None, user=None, tb=None)
 
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
             for fname in deleteQueue:
-                myLogInfo(funcName='deletePreviousPrintedFiles', msg=fname, myData=fname, user=None, tb=None)
+                # myLogInfo(funcName='deletePreviousPrintedFiles', msg=fname, myData=fname, user=None, tb=None)
                 myList = fname.split('.docx')
+
                 for i in range(0, len(myList) - 1):
-                    myLogInfo(funcName='deletePreviousPrintedFiles - for loop', msg=myList[i], myData=None, user=None, tb=None)
-                    os.remove(constants.DOC_DIRECTORY + myList[i] + '.docx')
+                    try:
+                        myLogInfo(funcName='deletePreviousPrintedFiles - for loop', msg=myList[i], myData=None, user=None, tb=None)
+                        os.remove(constants.DOC_DIRECTORY + myList[i] + '.docx')
+                    except FileNotFoundError:
+                        pass  # ignore this error
+
                 break
 
         # once all *.docx file have been deleted, delete the deleteQueue.txt file
