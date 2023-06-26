@@ -101,6 +101,9 @@
                             <li><a class="dropdown-item" href="{{url_for('managePurchaseOrderTable')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
                           </ul>
                     </li>
+
+                    <a class="nav-item nav-link" href="{{url_for('dashboard')}}">Dash Board</a>
+
                 </div>
 
               </div>
@@ -157,9 +160,10 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
 
-    {% block scripts %}
 
-    {% endblock %}
+    {% block scriptsAdmin %}
+
+    {% endblock scriptsAdmin %}
 </body>
 <div class="kevinpower">site enhanced by KevinPower</div>
 </html>>

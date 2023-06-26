@@ -277,7 +277,8 @@ def resetUserPassword():
             req = request.form
             username = req['username']
             pw = req['password']
-            #registered = utilities.getUserRegistered(username)
+            #registered = utilities.
+            # getUserRegistered(username)
             result = utilities.getUser(username)
             if result is None:
                 registered = False
@@ -1100,25 +1101,31 @@ def getLanguage() -> str:
 
     except Exception as e:
         print(f'problem in getLanguage: {e}')
-        
 
-def getUserRegistered(username: str) -> bool:
-    try:
-        exists: bool = False
-        db = getDatabase(constants.DATABASE_NAME)
-        conn = getConnection(db)
-        cur = conn.cursor()
-        parm = (username,)
-        stmt = "select username from user where username = ? and active is True"
-        cur.execute(stmt, parm)
-        user = cur.fetchone()
-        conn.commit()
-        cur.close()
-        if user is not None:
-            exists = True
 
-        return exists
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    supplierLabels: list = []
+    supplierData: list = []
+    myList = utilities.getSalesBySupplier()
+    for row in myList:
+        supplierLabels.append(row[1])
+        supplierData.append(row[0])
 
-    except Exception as e:
-        print(f'problem in getUserRegistered: {e}')
+    deptLabels: list = []
+    deptData: list = []
+    myList = utilities.getSalesByDepartment()
+    for row in myList:
+        deptLabels.append(row[1])
+        deptData.append(row[0])
 
+    userLabels: list = []
+    userData: list = []
+    myList = utilities.getSalesByUser()
+    for row in myList:
+        userLabels.append(row[1])
+        userData.append(row[0])
+
+    return render_template('dashboard.html', supplierLabels=supplierLabels, supplierData=supplierData,
+                           deptLabels=deptLabels, deptData=deptData,
+                           userLabels=userLabels, userData=userData)

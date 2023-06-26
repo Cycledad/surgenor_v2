@@ -1835,3 +1835,55 @@ def myLogInfo(funcName: str, msg: str = None, myData=None, user: str = None, tb:
 
 
 
+def getSalesBySupplier() -> list:
+    try:
+        resultset: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "select count(*), substr(po, 1, instr(po, '_')-1) as supplier from OrderTbl group by supplier"
+        cur.execute(stmt)
+        resultset = cur.fetchall()
+        conn.commit()
+        cur.close()
+
+        return resultset
+
+    except Exception as e:
+        print(f'getSalesBySupplier: {e}')
+
+def getSalesByDepartment() -> list:
+    try:
+        resultset: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "select count(*), deptname from OrderTbl group by deptName"
+        cur.execute(stmt)
+        resultset = cur.fetchall()
+        conn.commit()
+        cur.close()
+
+        return resultset
+
+    except Exception as e:
+        print(f'getSupplierByDepartment: {e}')
+
+
+def getSalesByUser() -> list:
+    try:
+        resultset: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "select count(*), orderUsername from OrderTbl group by orderUserName"
+        cur.execute(stmt)
+        resultset = cur.fetchall()
+        conn.commit()
+        cur.close()
+
+        return resultset
+
+    except Exception as e:
+        print(f'getSupplierByUser: {e}')
+
