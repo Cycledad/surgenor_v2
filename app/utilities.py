@@ -1783,7 +1783,7 @@ def deletePreviousPrintedFiles() -> None:
         # I now create myList and then use myLogInfo to files to be deleted but instead
         # of individually deleting the files I simply delete ALL docx files
 
-        myLogInfo(funcName='deletePreviousPrintedFiles', msg=None, myData=None, user=None, tb=None)
+        # myLogInfo(funcName='deletePreviousPrintedFiles', msg=None, myData=None, user=None, tb=None)
 
         with open(constants.DOC_DIRECTORY + "deleteQueue.txt", "r") as deleteQueue:
             for fname in deleteQueue:
@@ -1792,7 +1792,7 @@ def deletePreviousPrintedFiles() -> None:
 
                 for i in range(0, len(myList) - 1):
                     try:
-                        myLogInfo(funcName='deletePreviousPrintedFiles - for loop', msg=myList[i], myData=None, user=None, tb=None)
+                        # myLogInfo(funcName='deletePreviousPrintedFiles - for loop', msg=myList[i], myData=None, user=None, tb=None)
                         os.remove(constants.DOC_DIRECTORY + myList[i] + '.docx')
                     except FileNotFoundError:
                         pass  # ignore this error
@@ -1823,7 +1823,7 @@ def myLogInfo(funcName: str, msg: str = None, myData=None, user: str = None, tb:
     '''
 
     try:
-        #myDate = datetime.date.today() # format is: yyyy-MM-dd
+        # myDate = datetime.date.today() # format is: yyyy-MM-dd
         myDate = datetime.datetime.now()
         print(f">>> myLogInfo: {myDate} -- funcName => {funcName}. Msg => {msg}. myData => {myData}. User => {user}. Traceback => {tb}.")
 
@@ -1832,7 +1832,6 @@ def myLogInfo(funcName: str, msg: str = None, myData=None, user: str = None, tb:
 
     finally:
         return
-
 
 
 def getSalesBySupplier() -> list:
@@ -1851,6 +1850,7 @@ def getSalesBySupplier() -> list:
 
     except Exception as e:
         print(f'getSalesBySupplier: {e}')
+
 
 def getSalesByDepartment() -> list:
     try:

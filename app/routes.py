@@ -931,11 +931,11 @@ def viewDoc():
         import glob
         theList = []
 
-        utilities.myLogInfo(funcName='viewDoc', msg=None, myData=None, user=session['username'], tb=None)
-
         if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
+
+        utilities.myLogInfo(funcName='viewDoc', msg=None, myData=None, user=session['username'], tb=None)
 
         utilities.deletePreviousPrintedFiles()
 
@@ -970,19 +970,24 @@ def viewDoc():
             utilities.myLogInfo(funcName='viewDoc', msg='post - fname', myData=fname, user=session['username'], tb=None)
 
             if len(docList) == 0:
-                utilities.myLogInfo(funcName='viewDoc', msg=' post - len(docList) == 0', myData=docList, user=session['username'], tb=None)
+                # utilities.myLogInfo(funcName='viewDoc', msg=' post - len(docList) == 0', myData=docList, user=session['username'], tb=None)
                 return render_template('viewDoc.html', docList=['no files found'])
             elif fname == '':
-                utilities.myLogInfo(funcName='viewDoc', msg='post - happens when submit button is pressed with no selection', myData=fname,
-                                    user=session['username'], tb=None)
+                # utilities.myLogInfo(funcName='viewDoc', msg='post - happens when submit button is pressed with no selection', myData=fname,
+                #                    user=session['username'], tb=None)
                 # this happens when submit button is pressed with no selection
                 return render_template('viewDoc.html', docList=theList)
             else:
-                utilities.myLogInfo(funcName='viewDoc', msg='post - just before call to addDocToDeleteQueue',
+                utilities.addDocToDeleteQueue(fname)
+                utilities.myLogInfo(funcName='viewDoc', msg='post - just BEFORE call to send_from_directory',
                                     myData=fname,
                                     user=session['username'], tb=None)
-                utilities.addDocToDeleteQueue(fname)
+
                 return send_from_directory(constants.DOC_DIRECTORY, fname, as_attachment=True)
+
+                utilities.myLogInfo(funcName='viewDoc', msg='post - just AFTER call to send_from_directory',
+                                    myData=fname,
+                                    user=session['username'], tb=None)
 
         if len(docList) < 1:
             utilities.myLogInfo(funcName='viewDoc', msg='len(docList) < 1', myData=docList, user=session['username'], tb=None)
