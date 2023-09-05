@@ -4,13 +4,13 @@
 
 <div id="managePurchaseOrderTable"></div>
 
-{% endblock %}
+{% endblock content %}
 
-{% block scripts %}
+{% block scriptsAdmin %}
 
 
 <script>
-
+//debugger;
 
 var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    var editor = document.createElement("input");
@@ -63,7 +63,7 @@ var printIcon = function(cell, formatterParams, onrendered){
     return "<img src=./static/img/printer-16.png>";
 };
 
-//debugger;
+debugger;
 //Build Tabulator
 var table = new Tabulator("#managePurchaseOrderTable",
 {
@@ -175,4 +175,4 @@ table.on('tableBuilt', function(){
 });
 
 </script>
-{% endblock %}
+{% endblock scriptsAdmin %}

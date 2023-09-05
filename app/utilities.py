@@ -539,7 +539,7 @@ def getDepartmentId(deptName: str) -> int:
         cur.execute(stmt, parm)
         id = cur.fetchone()
         cur.close()
-        conn.commit()
+        # conn.commit()
         conn.close()
 
         return id[0]
@@ -875,6 +875,11 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+
+        # added July 20, 2023, seems to speed things up (I just eye-balled this)
+        # remains until connection is closed
+        cur.execute('PRAGMA cache_size = -1048576')
+
         #if GOD_LEVEL then show ALL purchase orders, active and non-active
         if securityLevel == constants.GOD_LEVEL:
             stmt = f'select p.id, o.id, purchaser.username, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
@@ -1039,15 +1044,172 @@ def updateActiveFlg(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
+        # update active indicator - can be 0 (inactive) or 1 (active)
         stmt = "update orderTbl set orderActive = ? where id = ?"
         cur.execute(stmt, parms)
         conn.commit()
-        cur.close()
 
-        return
+        # retrieve order number / po nbr
+        orderId = parms[1]
+        parm1 = (orderId,)
+        stmt1 = 'select o.OrderNbr from orderTbl o where o.id = ?'
+        cur.execute(stmt1, parm1)
+        orderNbr = cur.fetchone()
+        orderNbr = orderNbr[0]
+
+        # update purchaseOrder table
+        parm2 = (orderNbr,)
+        stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ? and o.orderActive = 1'
+        cur.execute(stmt2, parm2)
+        nbrOfOrders = cur.fetchone()
+        nbrOfOrders = nbrOfOrders[0]
+
+        # if NbrOfOrders = 0 then set purchaseOrderActive = 0 (inactive) in purchaseOrder table
+        # else set purchaseOrderActive = 1 (active) in purchaseOrder table
+        if nbrOfOrders == 0:
+            stmt3 = 'update purchaseOrder set purchaseOrderActive = 0 where purchaseOrderNbr = ?'
+            cur.execute(stmt3, parm2)
+        else:
+            stmt4 = 'update purchaseOrder set purchaseOrderActive = 1 where purchaseOrderNbr = ?'
+            cur.execute(stmt4, parm2)
+
+        conn.commit()
 
     except Exception as e:
         print(f'problem in updateActiveFlg: {e}')
+
+    finally:
+        cur.close()
+        conn.close()
+
+        return
+
+def isPOArchived(PONbr: int) -> bool:
+    POArchived = False
+    try:
+        '''
+        A purchase order is completely archived when the purchase order number is found in the ARCHIVE_PurchaseOrder 
+        table. Alternatively, a purchase order with multiple orders may have some orders archived, in this case some 
+        records may be found in the ARCHIVE_OrderTbl but the PONbr will not be found in the ARCHIVE_PurchaseOrder table.
+        '''
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (PONbr, )
+        stmt = 'select count(*) from ARCHIVE_OrderTbl where orderNbr = ?'
+        cur.execute(stmt, parm)
+        result = cur.fetchone()
+        result = result[0]
+
+        if result > 0:
+            POArchived = True
+
+    except Exception as e:
+        print(f'problem in isPOArchived: {e}')
+
+    finally:
+        cur.close()
+        conn.close()
+
+        return POArchived
+
+def restoreOrderTbl(PONbr: int) -> bool:
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (PONbr, )
+        rtnCode = True
+        stmt = 'INSERT INTO OrderTbl (OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, OrderReceivedDate, OrderReceivedBy, \
+				OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, OrderActive) \
+				SELECT OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, OrderReceivedDate, OrderReceivedBy, \
+				OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, 1 FROM ARCHIVE_OrderTbl WHERE OrderActive = 0 and orderNbr = ?'
+        cur.execute(stmt, parm)
+        conn.commit()
+
+    except Exception as e:
+        print(f'problem in utilities.restorePurchaseOrder: {e}')
+        rtnCode = False
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return rtnCode
+
+def restorePurchaseOrderTbl(PONbr) -> bool:
+    try:
+        '''
+        check to see if purchase order has been ARCHIVED, if yes then copy from ARCHIVE otherwise
+        assume purchase order has not been archived and record is present in purchase order table.
+        '''
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (PONbr,)
+        stmt = 'select count(*) from ARCHIVE_PurchaseOrder where purchaseOrderNbr = ? and purchaseOrderActive = 0'
+        cur.execute(stmt, parm)
+        result = cur.fetchone()
+        result = result[0]
+        rtnCode = True
+        if result > 0:  # ARCHIVED
+            stmt = 'INSERT INTO PurchaseOrder (purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, \
+                    purchaseOrderDateDeleted, purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId) \
+                    SELECT purchaseOrderDate, purchaseOrderReceivedDate, 1, purchaseOrderDateDeleted, \
+                    purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId \
+                    FROM ARCHIVE_PurchaseOrder WHERE purchaseOrderActive = 0 and purchaseOrderNbr = ?'
+            cur.execute(stmt, parm)
+            conn.commit()
+
+    except Exception as e:
+        print(f'problem in utilities.restorePurchaseOrder: {e}')
+        rtnCode = False
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return rtnCode
+
+
+def deleteARCHIVEDOrder(PONbr):
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (PONbr,)
+        stmt = 'delete from ARCHIVE_OrderTbl where OrderNbr = ? and orderActive = 0'
+        cur.execute(stmt, parm)
+        conn.commit()
+
+    except Exception as e:
+        print(f'problem in utilities.deleteARCHIVEDOrder: {e}')
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return
+
+
+def deleteARCHIVEDPurchaseOrder(PONbr):
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (PONbr,)
+        stmt = 'delete from ARCHIVE_PurchaseOrder where PurchaseOrderNbr = ? and purchaseOrderActive = 0'
+        cur.execute(stmt, parm)
+        conn.commit()
+
+    except Exception as e:
+        print(f'problem in utilities.deleteARCHIVEDPurchaseOrder: {e}')
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return
 
 
 def registerUser(username: str, hashed_pw: int, givenName: str, surname: str) -> None:
@@ -1101,7 +1263,7 @@ def getUserSecurityLevel(username: str) -> int:
         stmt = "select securityLevel from user where username = ? and active is True"
         cur.execute(stmt, parm)
         level = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         return level[0]
@@ -1121,7 +1283,7 @@ def getUser(username: str) -> bool:
         stmt = "select * from user where username = ? and active"
         cur.execute(stmt, parm)
         result = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
         #if result is not None:
         #    exists = True
@@ -1135,7 +1297,6 @@ def getUser(username: str) -> bool:
 
 def getTable(tableName: str) -> list:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -1144,7 +1305,7 @@ def getTable(tableName: str) -> list:
         cur.execute(stmt)
         rows = cur.fetchall()
         rows = list(rows)
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         return rows
@@ -1204,7 +1365,6 @@ def buildDoc(order, myList: list, orderTotalCost: float):
 
 def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int, orderTotalCost: float) -> None:
     try:
-
         #docPath = Path(__file__).parent / templateName
         docPathTemplate = constants.TEMPLATE_DIRECTORY + templateName
         doc = DocxTemplate(docPathTemplate)
@@ -1377,7 +1537,6 @@ def downloadDocToLocalHost(docName: str) -> None:
 
 def getPurchaseOrderDate(purchaseOrderNbr: int) -> str:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -1385,7 +1544,7 @@ def getPurchaseOrderDate(purchaseOrderNbr: int) -> str:
         stmt = "select purchaseOrderDate from PurchaseOrder where purchaseOrderNbr = ? and purchaseOrderActive = True"
         cur.execute(stmt, parm)
         purchaseOrderDate = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         return purchaseOrderDate[0]
@@ -1405,7 +1564,7 @@ def getPurchaseOrderById(orderId: int) -> list:
         stmt = "select * from PurchaseOrder where id = ? and purchaseOrderActive = True"
         cur.execute(stmt, parm)
         row = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
         for i in row:
             myList.append(i)
@@ -1416,38 +1575,48 @@ def getPurchaseOrderById(orderId: int) -> list:
         print(f'problem in getPurchaseOrderById: {e}')
 
 
-def getOrderByOrderNbr(orderNbr: int) -> list:
+def getOrderByOrderNbr(orderNbr: int, securityLevel: int) -> list:
+    '''
+    if use has security level 5, GOD LEVEL, then retrieve both active and non-active orders.
+    if not then retrieve only active records
+    '''
+
+    myList = []
+    rows = []
     try:
-        myList = []
-        rows = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (orderNbr,)
-        stmt = "select * from OrderTbl where orderNbr = ? order by orderSupplierId asc"
+        if securityLevel == constants.GOD_LEVEL:
+            stmt = "select * from OrderTbl where orderNbr = ? order by orderSupplierId asc"
+        else:
+            stmt = "select * from OrderTbl where orderNbr = ? and orderActive = 1 order by orderSupplierId asc"
         cur.execute(stmt, parm)
         rows = cur.fetchall()
-        conn.commit()
-        cur.close()
+
         for row in rows:
             myList.append(row)
-
-        return myList     # myList[0][3]
 
     except Exception as e:
         print(f'problem in getOrderByOrderNbr: {e}')
 
+    finally:
+        conn.commit()
+        cur.close()
+
+        return myList  # myList[0][3]
+
 
 def getMaxOrderId():
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         stmt = "select max(id) from OrderTbl"
         cur.execute(stmt)
         row = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
         maxOrderId = 0
         if row[0] != None:
@@ -1461,14 +1630,13 @@ def getMaxOrderId():
 
 def getCount(tableName: str) -> int:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         stmt = f"select count(*) from {tableName}"
         cur.execute(stmt)
         row = cur.fetchone()
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         count = 0
@@ -1483,14 +1651,13 @@ def getCount(tableName: str) -> int:
 
 def getOrderByCount() -> list:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         stmt = 'select orderpartdesc, count(orderpartdesc) count from ordertbl group by OrderPartDesc order by count desc'
         cur.execute(stmt)
         rows = cur.fetchall()
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         myList = []
@@ -1506,14 +1673,27 @@ def getOrderByCount() -> list:
 
 def getOrderByMonth() -> list:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'SELECT STRFTIME("%m", purchaseorderdate) AS month, COUNT(id) AS count FROM purchaseorder GROUP BY STRFTIME("%m", purchaseorderdate)'
-        cur.execute(stmt)
+        # stmt = 'SELECT STRFTIME("%m", purchaseorderdate) AS month, COUNT(id) AS count FROM purchaseorder GROUP BY STRFTIME("%m", purchaseorderdate)'
+        stmt1 = "SELECT CASE WHEN sTRFTIME('%m', purchaseorderdate) = '01' THEN 'JAN'"
+        stmt2 = " WHEN sTRFTIME('%m', purchaseorderdate) = '02' THEN 'FEB'"
+        stmt3 = " WHEN sTRFTIME('%m', purchaseorderdate) = '03' THEN 'MAR'"
+        stmt4 = " WHEN sTRFTIME('%m', purchaseorderdate) = '04' THEN 'APR'"
+        stmt5 = " WHEN sTRFTIME('%m', purchaseorderdate) = '05' THEN 'MAY'"
+        stmt6 = " WHEN sTRFTIME('%m', purchaseorderdate) = '06' THEN 'JUN'"
+        stmt7 = " WHEN sTRFTIME('%m', purchaseorderdate) = '07' THEN 'JUL'"
+        stmt8 =	" WHEN sTRFTIME('%m', purchaseorderdate) = '08' THEN 'AUG'"
+        stmt9 =	" WHEN sTRFTIME('%m', purchaseorderdate) = '09' THEN 'SEP'"
+        stmt10 = " WHEN sTRFTIME('%m', purchaseorderdate) = '10' THEN 'OCT'"
+        stmt11 = " WHEN sTRFTIME('%m', purchaseorderdate) = '11' THEN 'NOV'"
+        stmt12 = " WHEN sTRFTIME('%m', purchaseorderdate) = '12' THEN 'DEC'"
+        stmt13 = " END, COUNT(id) AS count FROM purchaseorder where substr(purchaseOrderDate, 1, 4) IN (select strftime('%Y', purchaseorderdate) from purchaseorder) GROUP BY STRFTIME('%m', purchaseorderdate);"
+        stmt14 = stmt1 + stmt2 + stmt3 + stmt4 + stmt5 + stmt6 + stmt7 + stmt8 + stmt9 + stmt10 + stmt11 + stmt12 + stmt13
+        cur.execute(stmt14)
         rows = cur.fetchall()
-        conn.commit()
+        # conn.commit()
         cur.close()
 
         myList = []
@@ -1529,7 +1709,6 @@ def getOrderByMonth() -> list:
 
 def getUserLanguage(username: str) -> str:
     try:
-
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -1537,14 +1716,14 @@ def getUserLanguage(username: str) -> str:
         stmt = "select language from user where username = ? and active is True"
         cur.execute(stmt, parm)
         lang = cur.fetchone()
-        conn.commit()
-        cur.close()
-
-        return lang[0]
 
     except Exception as e:
         print(f'problem in getUserLanguage: {e}')
 
+    finally:
+        cur.close()
+        conn.close()
+        return lang[0]
 
 def createSessionObjects(currentLang: str, session) -> str:
     try:
@@ -1687,8 +1866,8 @@ def createSessionObjects(currentLang: str, session) -> str:
 
 
 def getActive(tableName: str, colName: str, btrue: bool) -> list:
+    resultset: list = []
     try:
-        resultset: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -1696,14 +1875,15 @@ def getActive(tableName: str, colName: str, btrue: bool) -> list:
         stmt = f"select * from {tableName} where {colName} is ?"
         cur.execute(stmt, parms)
         resultset = cur.fetchall()
-        conn.commit()
-        cur.close()
-
-        return resultset
 
     except Exception as e:
         print(f'problem in getActive: {e}')
 
+    finally:
+        cur.close()
+        conn.close()
+
+        return resultset
 
 def printDoc():
     try:
@@ -1840,10 +2020,10 @@ def getSalesBySupplier() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "select count(*), substr(po, 1, instr(po, '_')-1) as supplier from OrderTbl group by supplier"
+        stmt = "select count(*), substr(po, 1, instr(po, '_')-1) as supplier from OrderTbl where substr(PO, instr(PO, '_') + 1, 4) IN (select strftime('%Y', purchaseorderdate) from purchaseorder) group by supplier;"
         cur.execute(stmt)
         resultset = cur.fetchall()
-        conn.commit()
+        #conn.commit()
         cur.close()
 
         return resultset
@@ -1858,10 +2038,10 @@ def getSalesByDepartment() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "select count(*), deptname from OrderTbl group by deptName"
+        stmt = "select count(*), deptname from OrderTbl where substr(PO, instr(PO, '_') + 1, 4) IN (select strftime('%Y', purchaseorderdate) from purchaseorder) group by deptName"
         cur.execute(stmt)
         resultset = cur.fetchall()
-        conn.commit()
+        #conn.commit()
         cur.close()
 
         return resultset
@@ -1876,14 +2056,147 @@ def getSalesByUser() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "select count(*), orderUsername from OrderTbl group by orderUserName"
+        stmt = "select count(*), orderUsername from OrderTbl where substr(PO, instr(PO, '_') + 1, 4) IN (select strftime('%Y', purchaseorderdate) from purchaseorder) group by orderUserName"
         cur.execute(stmt)
         resultset = cur.fetchall()
-        conn.commit()
+        #conn.commit()
         cur.close()
 
         return resultset
 
     except Exception as e:
         print(f'getSupplierByUser: {e}')
+
+def removeNonActiveRecords() -> int:
+    try:
+        recordCount: int = 0
+        count: int = 0
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+
+        # Purchaser
+        stmt = "select count(*) from Purchaser where purchaserActive = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = "insert into ARCHIVE_Purchaser (username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated) \
+                select username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated \
+                from Purchaser where purchaserActive = 0;"
+        cur.execute(stmt)
+        stmt = 'delete from Purchaser where purchaserActive = 0'
+        cur.execute(stmt)
+
+        # Supplier
+        stmt = "select count(*) from Supplier where supplierActive = 0"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'insert into ARCHIVE_Supplier(supplierName, supplierProv, supplierActive, supplierDateCreated) \
+                select supplierName, supplierProv, supplierActive, supplierDateCreated \
+                from Supplier where supplierActive = 0;'
+        cur.execute(stmt)
+        stmt = 'delete from Supplier where supplierActive = 0;'
+        cur.execute(stmt)
+
+        # Department
+        stmt = "select count(*) from department where active = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'insert into ARCHIVE_Department(deptname, dateCreated, active, dateInActive) \
+                select deptname, dateCreated, active, dateInActive \
+                from department where active = 0;'
+        cur.execute(stmt)
+        stmt = 'delete from Department where active = 0;'
+        cur.execute(stmt)
+
+        # User
+        stmt = "select count(*) from user WHERE active = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'insert into ARCHIVE_User(givenName, surname, username, password, createDate, active, dateInActive, securityLevel) \
+                select givenName, surname, username, password, createDate, active, dateInActive, securityLevel \
+                from user WHERE active = 0;'
+        cur.execute(stmt)
+        stmt = 'delete from user where active = 0;'
+        cur.execute(stmt)
+
+        # Provincial Tax Rates
+        stmt = "select count(*) from ProvincialTaxRates where active = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'insert into ARCHIVE_ProvincialTaxRates(provincialCode, taxRate, label, active) \
+                select provincialCode, taxRate, label, active \
+                from ProvincialTaxRates where active = 0;'
+        cur.execute(stmt)
+        stmt = 'delete from ProvincialTaxRates where active = 0;'
+        cur.execute(stmt)
+
+        # Order table
+        stmt = "select count(*) FROM OrderTbl WHERE OrderActive = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'INSERT INTO ARCHIVE_OrderTbl(OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, \
+                    OrderReceivedDate, OrderReceivedBy, OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, OrderActive) \
+                SELECT OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, OrderReceivedDate, \
+                    OrderReceivedBy, OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, OrderActive \
+                FROM OrderTbl WHERE OrderActive = 0;'
+        cur.execute(stmt)
+
+        # becuz of foreign keys referenced in ordertbl you must first delete the foreign keys recs
+        # from purchaseorder or set foreign keys off using pragma
+
+        stmt = 'delete from OrderTbl where OrderActive = 0;'
+        cur.execute(stmt)
+
+        # Purchase Order
+        stmt = "select count(*)  FROM PurchaseOrder WHERE purchaseOrderActive = 0;"
+        cur.execute(stmt)
+        count = cur.fetchone()
+        recordCount += count[0]
+
+        stmt = 'INSERT INTO ARCHIVE_PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, \
+                    purchaseOrderDateDeleted, purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId) \
+                SELECT purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderDateDeleted, \
+                    purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId \
+                FROM PurchaseOrder WHERE purchaseOrderActive = 0;'
+        cur.execute(stmt)
+
+        # PRAGMA
+        # foreign_keys = OFF;
+        # PRAGMA
+        # foreign_keys;
+
+        '''
+        stmt = 'delete from PurchaseOrder where purchaseOrderNbr in ( \
+                select orderNbr \
+                from OrderTbl, PurchaseOrder \
+                where ordertbl.OrderActive = 0 and PurchaseOrder.purchaseOrderNbr = OrderTbl.OrderNbr);'
+        '''
+        cur.execute('PRAGMA foreign_keys = OFF;')
+
+        stmt = 'delete from PurchaseOrder where purchaseOrderActive = 0'
+        cur.execute(stmt)
+
+        cur.execute('PRAGMA foreign_keys = OFF;')
+
+        conn.commit()
+        cur.close()
+
+        return recordCount
+
+    except Exception as e:
+        print(f'removeNonActiveRecords: {e}')
+
+
 

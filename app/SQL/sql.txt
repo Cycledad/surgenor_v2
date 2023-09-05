@@ -1,0 +1,10 @@
+select po, substr(po, instr(po, '_')+1, 4) as year,  substr(po, instr(po, '_')+6, 2) as month from OrderTbl 
+select count(po), substr(po, instr(po, '_')+6, 2) as month from OrderTbl group by month;
+
+
+select count(substr(po, 1, instr(po, '_')-1)), substr(po, 1, instr(po, '_')-1) as supplier from OrderTbl group by supplier
+select count(*), substr(po, 1, instr(po, '_')-1) as supplier from OrderTbl group by supplier
+select count(*), deptname from OrderTbl group by deptName 
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

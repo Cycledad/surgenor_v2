@@ -167,7 +167,7 @@ def addOrder():
 
            # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
 
-            orderList = utilities.getOrderByOrderNbr(purchaseOrderNbr)
+            orderList = utilities.getOrderByOrderNbr(purchaseOrderNbr, session['securityLevel'])
             utilities.createPrintDoc(orderList)
 
             return render_template('home.html')
@@ -556,7 +556,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         value = request.args.get('value', '')
         myList = value.split(',')
         orderNbr = int(myList[0])
-        orderList = utilities.getOrderByOrderNbr(orderNbr)
+        orderList = utilities.getOrderByOrderNbr(orderNbr, session['securityLevel'])
         utilities.createPrintDoc(orderList)
 
         # utilities.printDoc()
@@ -966,6 +966,9 @@ def viewDoc():
 
             # fname = req['selFile']
 
+            # clear any flash messages - doesnt seem to work
+            # session.pop('_flashes', None)
+
             fname = request.form.get('selFile', '')
             utilities.myLogInfo(funcName='viewDoc', msg='post - fname', myData=fname, user=session['username'], tb=None)
 
@@ -977,17 +980,23 @@ def viewDoc():
                 #                    user=session['username'], tb=None)
                 # this happens when submit button is pressed with no selection
                 return render_template('viewDoc.html', docList=theList)
+            elif fname not in theList:
+                # didnt like the way this looked .... flash('Document not available to print', 'warning')
+                return render_template('viewDoc.html', docList=theList)
             else:
                 utilities.addDocToDeleteQueue(fname)
-                utilities.myLogInfo(funcName='viewDoc', msg='post - just BEFORE call to send_from_directory',
-                                    myData=fname,
-                                    user=session['username'], tb=None)
+                #utilities.myLogInfo(funcName='viewDoc', msg='post - just BEFORE call to send_from_directory',
+                #                    myData=fname,
+                #                    user=session['username'], tb=None)
 
+                # remove fname from list before sending
+                #theList.remove(fname)
                 return send_from_directory(constants.DOC_DIRECTORY, fname, as_attachment=True)
 
-                utilities.myLogInfo(funcName='viewDoc', msg='post - just AFTER call to send_from_directory',
-                                    myData=fname,
-                                    user=session['username'], tb=None)
+
+                #utilities.myLogInfo(funcName='viewDoc', msg='post - just AFTER call to send_from_directory',
+                #                    myData=fname,
+                #                    user=session['username'], tb=None)
 
         if len(docList) < 1:
             utilities.myLogInfo(funcName='viewDoc', msg='len(docList) < 1', myData=docList, user=session['username'], tb=None)
@@ -998,7 +1007,16 @@ def viewDoc():
     except Exception as e:
         utilities.myLogInfo(funcName='viewDoc', msg='problem in viewDoc', myData=None, user=session['username'], tb=traceback.format_exc())
 
+    finally:
 
+        # return redirect(url_for('viewDoc'))
+
+        '''
+        if len(theList) == 0:
+            return render_template('viewDoc.html', docList=['no files found'])
+        else:
+            return render_template('viewDoc.html', docList=theList)
+        '''
 
 # no longer used as per Kevin Fri Feb 17, 2023
 @app.route('/stats', methods=['GET'])
@@ -1110,27 +1128,82 @@ def getLanguage() -> str:
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    supplierLabels: list = []
-    supplierData: list = []
-    myList = utilities.getSalesBySupplier()
-    for row in myList:
-        supplierLabels.append(row[1])
-        supplierData.append(row[0])
+    try:
+        supplierLabels: list = []
+        supplierData: list = []
+        myList = utilities.getSalesBySupplier()
+        for row in myList:
+            supplierLabels.append(row[1])
+            supplierData.append(row[0])
 
-    deptLabels: list = []
-    deptData: list = []
-    myList = utilities.getSalesByDepartment()
-    for row in myList:
-        deptLabels.append(row[1])
-        deptData.append(row[0])
+        deptLabels: list = []
+        deptData: list = []
+        myList = utilities.getSalesByDepartment()
+        for row in myList:
+            deptLabels.append(row[1])
+            deptData.append(row[0])
 
-    userLabels: list = []
-    userData: list = []
-    myList = utilities.getSalesByUser()
-    for row in myList:
-        userLabels.append(row[1])
-        userData.append(row[0])
+        userLabels: list = []
+        userData: list = []
+        myList = utilities.getSalesByUser()
+        for row in myList:
+            userLabels.append(row[1])
+            userData.append(row[0])
 
-    return render_template('dashboard.html', supplierLabels=supplierLabels, supplierData=supplierData,
-                           deptLabels=deptLabels, deptData=deptData,
-                           userLabels=userLabels, userData=userData)
+        monthLabels: list = []
+        monthData: list = []
+        myList = utilities.getOrderByMonth()
+        for row in myList:
+            monthLabels.append(row[0])
+            monthData.append(row[1])
+
+
+
+        return render_template('dashboard.html', supplierLabels=supplierLabels, supplierData=supplierData,
+                               deptLabels=deptLabels, deptData=deptData,
+                               userLabels=userLabels, userData=userData,
+                               monthLabels=monthLabels, monthData=monthData)
+
+    except Exception as e:
+        print(f'problem in dashboard: {e}')
+
+
+@app.route('/restorePurchaseOrder', methods=['GET', 'POST'])
+def restorePurchaseOrder():
+    try:
+        if request.method == 'POST':
+            req = request.form
+            PONbr = req['PONbr']
+            # determine if PONbr is in archive database
+            isPOArchived = utilities.isPOArchived(PONbr)
+            if isPOArchived:
+                rtn = utilities.restoreOrderTbl(PONbr)
+                if rtn:
+                    rtn = utilities.restorePurchaseOrderTbl(PONbr)
+                    if rtn:
+                        utilities.deleteARCHIVEDOrder(PONbr)
+                        utilities.deleteARCHIVEDPurchaseOrder(PONbr)
+                        flash(f'Purchase Order {PONbr} Restored ', 'danger')
+                else:
+                    flash(f'ISSUE restoring Purchase Order {PONbr}, check error log', 'danger')
+            else:
+                flash(f'Purchase Order {PONbr} not found in ARCHIVE', 'danger')
+
+    except Exception as e:
+        print(f'problem in restorePurchaseOrder: {e}')
+
+
+    return render_template('restorePurchaseOrder.html')
+
+
+@app.route('/archiveInActiveRecords', methods=['GET', 'POST'])
+def archiveInActiveRecords():
+    try:
+        if request.method == 'POST':
+            count = utilities.removeNonActiveRecords()
+            flash(f'{count} InActive records archived!', 'warning')
+    except Exception as e:
+        print(f'problem in archiveInActiveRecords: {e}')
+    finally:
+        return render_template('archiveInActiveRecords.html')
+

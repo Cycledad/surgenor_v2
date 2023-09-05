@@ -50,6 +50,38 @@ INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, Orde
 values(10, 1, 1, 1, 1, 20.50, 20.50, DATE('now'));
 */
 
+DROP TABLE IF EXISTS ARCHIVE_OrderTbl;
+CREATE TABLE ARCHIVE_OrderTbl (
+	id INTEGER NOT NULL,
+	OrderNbr INTEGER NOT NULL,
+	OrderSupplierId INTEGER NOT NULL,
+	deptName TEXT NOT NULL,
+	OrderPartDesc TEXT NOT NULL,
+	OrderQuantity INTEGER NOT NULL,
+	OrderPartPrice REAL DEFAULT(0.0) NOT NULL,
+	OrderReceivedDate TEXT,
+	OrderReceivedBy TEXT,
+	OrderReturnDate TEXT,
+	OrderReturnQuantity INTEGER,
+	PO TEXT,
+	OrderUsername TEXT NOT NULL,
+	OrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+	--FOREIGN KEY(OrderSupplierId) REFERENCES Supplier (id),
+	--FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr)
+
+);
+INSERT INTO ARCHIVE_OrderTbl (OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, OrderReceivedDate, OrderReceivedBy,
+								OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, OrderActive)
+								SELECT OrderNbr, OrderSupplierId, deptName, OrderPartDesc, OrderQuantity, OrderPartPrice, OrderReceivedDate, OrderReceivedBy,
+								OrderReturnDate, OrderReturnQuantity, PO, OrderUsername, OrderActive FROM OrderTbl WHERE OrderActive = 0;
+
+-- becuz of foreign keys referenced in ordertbl you must first delete the foreign keys recs from purchaseorder or set foreign keys off using pragma
+
+delete from OrderTbl where OrderActive = 0;
+
+
 --- PART TABLE NO LONGER USED
 /*
 DROP TABLE IF EXISTS Part;
@@ -112,6 +144,35 @@ values('01121999', '15121999', False, 10,2,1);
 
 */
 
+
+
+DROP TABLE IF EXISTS ARCHIVE_PurchaseOrder;
+CREATE TABLE ARCHIVE_PurchaseOrder(
+id INTEGER NOT NULL,
+purchaseOrderDate TEXT DEFAULT(DATE()) NOT NULL,
+dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+purchaseOrderReceivedDate TEXT,
+purchaseOrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
+purchaseOrderDateDeleted TEXT,
+purchaseOrderNbr INTEGER NOT NULL,
+purchaseOrderPurchaserId INTEGER NOT NULL,
+purchaseOrderPurchaserDeptId INTEGER NOT NULL,
+PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+INSERT INTO ARCHIVE_PurchaseOrder (purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive,
+purchaseOrderDateDeleted, purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId)
+SELECT purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderDateDeleted, purchaseOrderNbr,
+purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId
+FROM PurchaseOrder WHERE purchaseOrderActive = 0;
+
+PRAGMA foreign_keys = OFF;
+PRAGMA foreign_keys;
+
+delete from PurchaseOrder where  purchaseOrderNbr in (
+select orderNbr from OrderTbl, PurchaseOrder where ordertbl.OrderActive = 0 and PurchaseOrder.purchaseOrderNbr = OrderTbl.OrderNbr) ;
+
+
 DROP TABLE IF EXISTS Purchaser;
 CREATE TABLE Purchaser (
 	id INTEGER NOT NULL,
@@ -148,7 +209,24 @@ INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('BeryM'
 INSERT INTO Purchaser(username, PurchaserDeptId, purchaserActive) VALUES('JesseyGB', 1, true);
 
 
+DROP TABLE IF EXISTS ARCHIVE_Purchaser;
+CREATE TABLE ARCHIVE_Purchaser (
+	id INTEGER NOT NULL,
+	username text not null,
+	purchaserDeptId INTEGER NOT NULL,
+	purchaserActive BOOLEAN NOT NULL,    /* boolean */
+	purchaserDateInActive TEXT,
+	purchaserDateCreated TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
 
+);
+
+insert into ARCHIVE_Purchaser (username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated)
+select username, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated
+from Purchaser where purchaserActive = 0;
+
+delete from Purchaser where purchaserActive = 0
 
 --INSERT INTO Purchaser(givenName, surname, PurchaserDeptId, purchaserActive)
 --VALUES('Daniel', 'Savoie', 3, true);
@@ -206,7 +284,22 @@ INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, sup
 values('Window Max', '2 Glass Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wright', true, '28012022');
 */
 
+DROP TABLE IF EXISTS ARCHIVE_Supplier;
+CREATE TABLE ARCHIVE_Supplier (
+	id INTEGER NOT NULL,
+	supplierName TEXT NOT NULL,
+	supplierProv TEXT NOT NULL,
+	supplierActive BOOLEAN NOT NULL,    /* boolean */
+	supplierDateCreated TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
 
+);
+insert into ARCHIVE_Supplier (supplierName, supplierProv, supplierActive, supplierDateCreated)
+select supplierName, supplierProv, supplierActive, supplierDateCreated
+from Supplier where supplierActive = 0;
+
+delete from Supplier where supplierActive = 0;
 --- unit no longer used
 /*
 DROP TABLE IF EXISTS Unit;
@@ -246,6 +339,23 @@ INSERT INTO Department(deptName, active) values('Service', true);
 INSERT INTO Department(deptName, active) values('BodyShop', true);
 INSERT INTO Department(deptName, active) values('Admin', true);
 
+drop table if exists ARCHIVE_Department;
+CREATE TABLE ARCHIVE_Department (
+	id	INTEGER,
+	deptName TEXT NOT NULL,
+	dateCreated	INTEGER DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	active BOOLEAN NOT NULL,    /* boolean */
+	dateInActive TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+insert into ARCHIVE_Department (deptname, dateCreated, active, dateInActive)
+select deptname, dateCreated,  active, dateInActive
+from department where active = 0;
+
+delete from Department where active = 0;
+
 --note, givenName & surname in table User should match givenName & surname in Purchaser table ... im not using foreign keys
 drop table if exists User;
 CREATE TABLE User (
@@ -283,6 +393,25 @@ insert into user (username, password, givenName, surname, createDate, active, se
 insert into user (username, password, givenName, surname, createDate, active, securityLevel) values('BenjaminB', '$2b$12$HX9oxlh6Qdvprm/PQffl.eLSrrDI.0qTam0.sEfWuB9O5oyqB6Sz2', 'BENJAMIN', 'BONIN', DATE('now'), True, 0);
 
 
+drop table if exists ARCHIVE_User;
+CREATE TABLE ARCHIVE_User (
+	id	INTEGER,
+	givenName   TEXT NOT NULL,
+	surname     TEXT NOT NULL,
+	username	TEXT NOT NULL,
+	password	TEXT NOT NULL,
+	createDate	TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	active	BOOLEAN DEFAULT(TRUE) NOT NULL, /* boolean */
+	dateInActive TEXT,
+	securityLevel INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT));
+
+insert into ARCHIVE_User (givenName, surname, username, password, createDate, active, dateInActive, securityLevel)
+select givenName, surname, username, password, createDate, active, dateInActive, securityLevel
+from user WHERE active = 0;
+
+delete from user where active = 0;
 
 
 drop table if exists ProvincialTaxRates;
@@ -308,6 +437,24 @@ insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('N
 insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('PE', 15, 'Sales tax rate (HST) %', 1);
 insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('SK', 11, 'Sales tax rate (PST+GST) %', 1);
 insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('YK', 5, 'Sales tax rate (GST) %', 1);
+
+drop table if exists ARCHIVE_ProvincialTaxRates;
+CREATE TABLE ARCHIVE_ProvincialTaxRates (
+	id	INTEGER,
+	provincialCode TEXT NOT NULL,
+	taxRate	float NOT NULL,
+	label TEXT NOT NULL,
+	active BOOLEAN DEFAULT(TRUE) NOT NULL,    /* boolean */
+    dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+insert into ARCHIVE_ProvincialTaxRates (provincialCode, taxRate, label, active)
+select provincialCode, taxRate, label, active
+from ProvincialTaxRates where active = 0;
+
+delete from ProvincialTaxRates where active = 0;
+
 
 PRAGMA foreign_keys = ON;
 PRAGMA foreign_keys;

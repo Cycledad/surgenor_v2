@@ -1,0 +1,91 @@
+DROP TABLE IF EXISTS ARCHIVE_OrderTbl;
+CREATE TABLE ARCHIVE_OrderTbl (
+	id INTEGER NOT NULL,
+	OrderNbr INTEGER NOT NULL,
+	OrderSupplierId INTEGER NOT NULL,
+	deptName TEXT NOT NULL,
+	OrderPartDesc TEXT NOT NULL,
+	OrderQuantity INTEGER NOT NULL,
+	OrderPartPrice REAL DEFAULT(0.0) NOT NULL,
+	OrderReceivedDate TEXT,
+	OrderReceivedBy TEXT,
+	OrderReturnDate TEXT,
+	OrderReturnQuantity INTEGER,
+	PO TEXT,
+	OrderUsername TEXT NOT NULL,
+	OrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT));
+
+DROP TABLE IF EXISTS ARCHIVE_PurchaseOrder;
+CREATE TABLE ARCHIVE_PurchaseOrder(
+id INTEGER NOT NULL,
+purchaseOrderDate TEXT DEFAULT(DATE()) NOT NULL,
+dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+purchaseOrderReceivedDate TEXT,
+purchaseOrderActive BOOLEAN DEFAULT(TRUE) NOT NULL,
+purchaseOrderDateDeleted TEXT,
+purchaseOrderNbr INTEGER NOT NULL,
+purchaseOrderPurchaserId INTEGER NOT NULL,
+purchaseOrderPurchaserDeptId INTEGER NOT NULL,
+PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS ARCHIVE_Purchaser;
+CREATE TABLE ARCHIVE_Purchaser (
+	id INTEGER NOT NULL,
+	username text not null,
+	purchaserDeptId INTEGER NOT NULL,
+	purchaserActive BOOLEAN NOT NULL,    /* boolean */
+	purchaserDateInActive TEXT,
+	purchaserDateCreated TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS ARCHIVE_Supplier;
+CREATE TABLE ARCHIVE_Supplier (
+	id INTEGER NOT NULL,
+	supplierName TEXT NOT NULL,
+	supplierProv TEXT NOT NULL,
+	supplierActive BOOLEAN NOT NULL,    /* boolean */
+	supplierDateCreated TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+drop table if exists ARCHIVE_Department;
+CREATE TABLE ARCHIVE_Department (
+	id	INTEGER,
+	deptName TEXT NOT NULL,
+	dateCreated	INTEGER DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	active BOOLEAN NOT NULL,    /* boolean */
+	dateInActive TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+drop table if exists ARCHIVE_User;
+CREATE TABLE ARCHIVE_User (
+	id	INTEGER,
+	givenName   TEXT NOT NULL,
+	surname     TEXT NOT NULL,
+	username	TEXT NOT NULL,
+	password	TEXT NOT NULL,
+	createDate	TEXT DEFAULT(DATE()) NOT NULL,
+	dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	active	BOOLEAN DEFAULT(TRUE) NOT NULL, /* boolean */
+	dateInActive TEXT,
+	securityLevel INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT));
+
+drop table if exists ARCHIVE_ProvincialTaxRates;
+CREATE TABLE ARCHIVE_ProvincialTaxRates (
+	id	INTEGER,
+	provincialCode TEXT NOT NULL,
+	taxRate	float NOT NULL,
+	label TEXT NOT NULL,
+	active BOOLEAN DEFAULT(TRUE) NOT NULL,    /* boolean */
+    dateArchived integer DEFAULT(date('now', 'localtime')) NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);

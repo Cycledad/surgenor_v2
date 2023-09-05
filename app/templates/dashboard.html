@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
+    <div class="card card-style mb-2" style="width: 1100px;">
         <div class="card-body">
-            <div class="chart-container" style="position: relative;">
-                <canvas id="myChartSupplier"></canvas>
+            <div class="chart-container" >
+                <canvas id="myChartSupplier" style="position: relative;" ></canvas>
             </div>
         </div>
     </div>
 </div>
 
 <div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
+    <div class="card card-style mb-2" style="width: 1100px;">
         <div class="card-body">
             <div class="chart-container" style="position: relative;">
                 <canvas id="myChartDept"></canvas>
@@ -24,10 +24,20 @@
 </div>
 
 <div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
+    <div class="card card-style mb-2" style="width: 1100px;">
         <div class="card-body">
             <div class="chart-container" style="position: relative;">
                 <canvas id="myChartUser"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-10 col-sm-6 col-md-6">
+    <div class="card card-style mb-2" style="width: 1100px;">
+        <div class="card-body">
+            <div class="chart-container" style="position: relative;">
+                <canvas id="myChartOrdersByMonth"></canvas>
             </div>
         </div>
     </div>
@@ -52,13 +62,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
+debugger;
 const ctxSupplier = document.getElementById('myChartSupplier').getContext('2d');
     const myChartSupplier = new Chart(ctxSupplier, {
         type: 'bar',
         data: {
         labels: {{ supplierLabels | safe}},
             datasets: [{
-                label: 'Orders by Supplier',
+                label: 'Orders by Supplier for Current Year',
                 data: {{ supplierData | safe }},
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -100,13 +111,14 @@ const ctxSupplier = document.getElementById('myChartSupplier').getContext('2d');
     });
 
 
+
 const ctxDept = document.getElementById('myChartDept').getContext('2d');
     const myChartDept = new Chart(ctxDept, {
         type: 'bar',
         data: {
         labels: {{ deptLabels | safe}},
             datasets: [{
-                label: 'Orders by Department',
+                label: 'Orders by Department for Current Year',
                 data: {{ deptData | safe }},
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -153,7 +165,7 @@ const ctxUser = document.getElementById('myChartUser').getContext('2d');
         data: {
         labels: {{ userLabels | safe}},
             datasets: [{
-                label: 'Orders by User',
+                label: 'Orders by User for Current Year',
                 data: {{ userData | safe }},
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -193,6 +205,57 @@ const ctxUser = document.getElementById('myChartUser').getContext('2d');
             }
             }
     });
+
+
+const ctxOrdersByMonth = document.getElementById('myChartOrdersByMonth').getContext('2d');
+    const myChartOrdersByMonth = new Chart(ctxOrdersByMonth, {
+        type: 'bar',
+        data: {
+        labels: {{ monthLabels | safe}},
+            datasets: [{
+                label: 'Orders by Month for Current Year',
+                data: {{ monthData | safe }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+    options: {
+                title: {
+                    display: true,
+                        text: "Income Categories",
+                            fontSize: 20,
+            },
+                legend: {
+                    position: "right",
+                        labels: {
+                        fontColor: "gray"
+                    },
+                    display: true,
+            },
+
+                elements: {
+                    hitRadius: 3,
+            }
+            }
+    });
+
+
+
 
 // example script from chart.js
 //    const ctx2 = document.getElementById('myChart2').getContext('2d');

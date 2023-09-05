@@ -41,7 +41,7 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 var updateReturnQuantity = (cell) =>
 {
     //alert("say it");
-    //debugger;
+    debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
@@ -55,7 +55,7 @@ var updateReturnQuantity = (cell) =>
         } else {
             msg = "La quantité ne peut pas être inférieure à 0!";
         }
-        //alert(msg);
+        alert(msg);
     } else {
         if (isNaN(returnQuantity)) {
             if (lang == 'en-us') {
@@ -63,7 +63,7 @@ var updateReturnQuantity = (cell) =>
             } else {
                 msg = "Pas un numéro !!";
             }
-            //alert(msg);
+            alert(msg);
         }
         else {
             let quantityOrdered = rowData[8];
@@ -76,7 +76,7 @@ var updateReturnQuantity = (cell) =>
                     msg = "La quantité retournée ne peut excéder la quantité commandée !";
                 }
 
-                //alert(msg);
+                alert(msg);
             }
             else {
                 let value = id + "," + returnQuantity
@@ -159,8 +159,8 @@ var updateActive = (cell) =>
         {
             msg = "Vous devez avoir le niveau de sécurité 5 pour modifier l'indicateur actif de l'ordre";
         }
-        //alert(msg);
-         // i need to do this to pull/reset original column data from db
+        alert(msg);
+        // i need to do this to pull/reset original column data from db
         URL = "/api/data/managePurchaseOrder";
         table.setData(URL);
     } else {
@@ -365,7 +365,7 @@ table.on('tableBuilt', function(){
     {
         if (this.readyState == 4 && this.status == 200)
         {
-            debugger;
+            //debugger;
             //alert(this.responseText);
             lang = this.responseText;
             //debugger;
@@ -439,18 +439,19 @@ function printit(e,row)
 {
     //debugger;
     //row.getData()[colnbr], i.e. row.getData()[1]
-    orderNbr = row.getData()["4"]  //orderNbr
-    value= orderNbr
+    activeFlg = row.getData()["16"];
+    if (activeFlg == 0) {
+        alert("Warning, record is not active");
+    }
+    orderNbr = row.getData()["4"];  //orderNbr
+    value= orderNbr;
     URL = "/api/data/managePurchaseOrder?action=printOrder&value=" + value;
     //URL = "/viewDoc=printOrder&value=" + value;
     //xhttp = new XMLHttpRequest();
     //xhttp.open("GET", URL);
     //xhttp.send();
     table.setData(URL);
-
 }
-
-
 
 </script>
 {% endblock %}

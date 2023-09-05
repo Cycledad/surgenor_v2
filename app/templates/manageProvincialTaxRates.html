@@ -1,16 +1,16 @@
-{% extends 'AdminBase.html' %}
+{%extends 'AdminBase.html' %}
 
 {% block content %}
 
 <div id="manageProvincialTaxRates-table"></div>
 
-{% endblock %}
+{% endblock content %}
 
-{% block scripts %}
+{% block scriptsAdmin %}
 
 
 <script>
-
+debugger;
 
 var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    var editor = document.createElement("input");
@@ -56,6 +56,7 @@ var updateCol = (cell) =>
 
 
 //Build Tabulator
+debugger;
 var table = new Tabulator("#manageProvincialTaxRates-table",
 {
 
@@ -149,4 +150,4 @@ table.on('tableBuilt', function(){
 });
 
 </script>
-{% endblock %}
+{% endblock scriptsAdmin %}
